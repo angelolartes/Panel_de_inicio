@@ -152,20 +152,20 @@
         <div class="absolute -bottom-40 left-1/4 w-[24rem] sm:w-[36rem] h-[24rem] sm:h-[36rem] bg-[#30D158]/15 dark:bg-[#5E5CE6]/20 rounded-full blur-[100px] sm:blur-[120px]"></div>
     </div>
 
-    <!-- Contenedor Principal Adaptativo (Móvil + PC) -->
-    <div class="relative z-10 max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-7 flex flex-col gap-5 sm:gap-7 min-h-[100dvh] justify-between">
+    <!-- Contenedor Principal Pantalla Completa Widescreen (Móvil + PC) -->
+    <div class="relative z-10 w-full max-w-[1800px] mx-auto px-4 sm:px-8 lg:px-14 xl:px-20 py-4 sm:py-6 lg:py-8 flex flex-col gap-6 sm:gap-8 lg:gap-9 min-h-[100dvh] justify-between">
 
-        <!-- BARRA SUPERIOR ESTILO CONTROL CENTER / MACOS MENU BAR (Optimizada para Móvil y PC) -->
-        <header class="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center justify-between gap-2.5">
+        <!-- BARRA SUPERIOR ESTILO CONTROL CENTER / MACOS MENU BAR (Ancho completo en PC y Móvil) -->
+        <header class="w-full flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center justify-between gap-3 sm:gap-4">
             <!-- Fila Superior en Móvil: Saludo + Controles Rápidos -->
             <div class="flex items-center justify-between gap-2">
                 <!-- Saludo y Usuario en Píldora -->
-                <div class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] px-3.5 py-2 rounded-full flex items-center gap-2 min-w-0">
-                    <span class="w-2 h-2 rounded-full bg-[#30D158] animate-pulse shrink-0"></span>
+                <div class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] px-4 py-2.5 rounded-full flex items-center gap-2.5 min-w-0">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#30D158] animate-pulse shrink-0"></span>
                     <span id="greeting-text" class="text-xs sm:text-sm font-medium text-slate-600 dark:text-white/75 shrink-0">Hola,</span>
-                    <button id="edit-name-btn" class="text-xs sm:text-sm font-semibold accent-text hover:opacity-80 flex items-center gap-1 group truncate" title="Cambiar nombre">
-                        <span id="user-name-display" class="truncate max-w-[110px] sm:max-w-[160px]">Usuario</span>
-                        <i data-lucide="pencil" class="w-3 h-3 opacity-60 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0"></i>
+                    <button id="edit-name-btn" class="text-xs sm:text-sm font-semibold accent-text hover:opacity-80 flex items-center gap-1.5 group truncate" title="Cambiar nombre">
+                        <span id="user-name-display" class="truncate max-w-[130px] sm:max-w-[220px]">Usuario</span>
+                        <i data-lucide="pencil" class="w-3.5 h-3.5 opacity-60 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0"></i>
                     </button>
                 </div>
 
@@ -187,177 +187,177 @@
                 </div>
             </div>
 
-            <!-- Píldoras de Estado: Nube + Dólar + Clima + Ajustes (Scroll horizontal suave en pantallas muy angostas) -->
-            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 sm:ml-auto">
+            <!-- Píldoras de Estado: Nube + Dólar + Clima + Ajustes -->
+            <div class="flex items-center gap-2.5 lg:gap-3 overflow-x-auto no-scrollbar py-0.5 sm:ml-auto">
                 <!-- Píldora de Estado de Sincronización en la Nube (Firestore) -->
-                <button id="cloud-sync-btn" class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] px-3.5 py-2 rounded-full flex items-center gap-2 text-xs sm:text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" title="Configurar sincronización en la nube entre PC y Celular">
+                <button id="cloud-sync-btn" class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] px-4 py-2.5 rounded-full flex items-center gap-2 text-xs sm:text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" title="Configurar sincronización en la nube entre PC y Celular">
                     <span id="cloud-status-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    <i id="cloud-status-icon" data-lucide="cloud" class="w-3.5 h-3.5 text-[#007AFF] dark:text-[#0A84FF]"></i>
-                    <span id="cloud-status-text" class="font-medium text-slate-700 dark:text-white/85 text-xs">Conectando...</span>
+                    <i id="cloud-status-icon" data-lucide="cloud" class="w-4 h-4 text-[#007AFF] dark:text-[#0A84FF]"></i>
+                    <span id="cloud-status-text" class="font-medium text-slate-700 dark:text-white/85 text-xs sm:text-sm">Conectando...</span>
                 </button>
 
                 <!-- Cotización Dólar en vivo (DolarApi) -->
-                <button id="dolar-btn" class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] px-3.5 py-2 rounded-full flex items-center gap-1.5 text-xs sm:text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" title="Click para ver todas las cotizaciones">
+                <button id="dolar-btn" class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] px-4 py-2.5 rounded-full flex items-center gap-2 text-xs sm:text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" title="Click para ver todas las cotizaciones">
                     <span class="w-4 h-4 rounded-full bg-[#30D158]/20 text-[#30D158] flex items-center justify-center font-bold text-[10px]">$</span>
-                    <span class="text-slate-500 dark:text-white/60 text-xs font-medium">Blue</span>
+                    <span class="text-slate-500 dark:text-white/60 text-xs sm:text-sm font-medium">Blue</span>
                     <span id="dolar-rate" class="font-semibold text-slate-800 dark:text-white tabular-nums">$---</span>
                 </button>
 
                 <!-- Widget de Clima -->
-                <button id="weather-btn" class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] px-3.5 py-2 rounded-full flex items-center gap-1.5 text-xs sm:text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" title="Click para cambiar ciudad">
+                <button id="weather-btn" class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] px-4 py-2.5 rounded-full flex items-center gap-2 text-xs sm:text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" title="Click para cambiar ciudad">
                     <i id="weather-icon" data-lucide="cloud-sun" class="w-4 h-4 text-[#FF9F0A]"></i>
                     <span id="weather-temp" class="font-semibold tabular-nums">--°C</span>
-                    <span id="weather-city" class="text-slate-500 dark:text-white/60 text-xs font-medium truncate max-w-[90px] sm:max-w-none">Buenos Aires</span>
+                    <span id="weather-city" class="text-slate-500 dark:text-white/60 text-xs sm:text-sm font-medium truncate max-w-[100px] sm:max-w-none">Buenos Aires</span>
                 </button>
 
                 <!-- Grupo de Controles Rápidos en Desktop/Tablet -->
-                <div class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] p-1 rounded-full hidden sm:flex items-center gap-0.5 shrink-0">
+                <div class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] p-1.5 rounded-full hidden sm:flex items-center gap-1 shrink-0">
                     <button id="accent-btn" class="p-2 rounded-full text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/10 transition" title="Color de acento Apple">
-                        <i data-lucide="palette" class="w-3.5 h-3.5"></i>
+                        <i data-lucide="palette" class="w-4 h-4"></i>
                     </button>
                     <button id="wallpaper-btn" class="p-2 rounded-full text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/10 transition" title="Cambiar fondo de pantalla">
-                        <i data-lucide="image" class="w-3.5 h-3.5"></i>
+                        <i data-lucide="image" class="w-4 h-4"></i>
                     </button>
                     <button id="zen-toggle" class="p-2 rounded-full text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/10 transition" title="Modo Zen (ocultar/mostrar widgets)">
-                        <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                        <i data-lucide="eye" class="w-4 h-4"></i>
                     </button>
                     <button id="theme-toggle" class="p-2 rounded-full text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/10 transition" title="Cambiar modo claro/oscuro">
-                        <i data-lucide="sun" class="w-3.5 h-3.5 hidden dark:block text-[#FFD60A]"></i>
-                        <i data-lucide="moon" class="w-3.5 h-3.5 block dark:hidden"></i>
+                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-[#FFD60A]"></i>
+                        <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
                     </button>
                 </div>
             </div>
         </header>
 
-        <!-- SECCIÓN CENTRAL: Reloj iOS Lock Screen y Buscador Spotlight -->
-        <section class="flex flex-col items-center text-center my-0.5 sm:my-1">
+        <!-- SECCIÓN CENTRAL: Reloj iOS Lock Screen y Buscador Spotlight Amplio -->
+        <section class="flex flex-col items-center text-center my-1 lg:my-3">
             <!-- Fecha arriba del reloj al estilo iOS 18 / macOS Sonoma -->
-            <p id="current-date" class="text-xs sm:text-sm font-semibold tracking-wide text-slate-600 dark:text-white/75 capitalize mb-0.5 drop-shadow-sm">
+            <p id="current-date" class="text-xs sm:text-base font-semibold tracking-wide text-slate-600 dark:text-white/80 capitalize mb-1 drop-shadow-sm">
                 Cargando fecha...
             </p>
 
             <!-- Reloj Digital (Click o Tap para alternar formato 24h / 12h) -->
-            <div id="clock-container" class="mb-4 sm:mb-5 select-none cursor-pointer group active:scale-95 transition-transform" title="Tocá para cambiar entre formato 24h y 12h">
-                <div class="flex items-baseline justify-center gap-1.5">
-                    <h1 id="clock-time" class="apple-clock text-6xl sm:text-8xl font-semibold tracking-tighter text-slate-900 dark:text-white tabular-nums group-hover:scale-[1.01] transition-transform">
+            <div id="clock-container" class="mb-5 lg:mb-7 select-none cursor-pointer group active:scale-95 transition-transform" title="Tocá para cambiar entre formato 24h y 12h">
+                <div class="flex items-baseline justify-center gap-2">
+                    <h1 id="clock-time" class="apple-clock text-6xl sm:text-8xl lg:text-[6.5rem] leading-none font-semibold tracking-tighter text-slate-900 dark:text-white tabular-nums group-hover:scale-[1.01] transition-transform">
                         00:00
                     </h1>
                     <div class="flex flex-col items-start">
-                        <span id="clock-ampm" class="hidden text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-[#007AFF]/15 text-[#007AFF] dark:text-[#0A84FF] mb-0.5">
+                        <span id="clock-ampm" class="hidden text-[11px] font-bold uppercase px-2 py-0.5 rounded-full bg-[#007AFF]/20 text-[#007AFF] dark:text-[#0A84FF] mb-1">
                             AM
                         </span>
-                        <span id="clock-seconds" class="text-base sm:text-xl font-medium text-slate-400 dark:text-white/45 tabular-nums w-7 text-left">
+                        <span id="clock-seconds" class="text-lg sm:text-2xl font-medium text-slate-400 dark:text-white/50 tabular-nums w-8 text-left">
                             00
                         </span>
                     </div>
                 </div>
             </div>
 
-            <!-- Barra de Búsqueda Estilo macOS / iOS Spotlight (text-base en móvil evita auto-zoom en iOS) -->
-            <div class="w-full max-w-xl relative">
-                <form id="search-form" class="relative flex items-center glass-card bg-white/80 dark:bg-[#1C1C1E]/85 border border-white/70 dark:border-white/[0.15] rounded-2xl focus-within:ring-2 focus-within:ring-[#007AFF]/60 transition-all overflow-hidden">
+            <!-- Barra de Búsqueda Estilo macOS / iOS Spotlight (Más ancha en PC para que no se corte el texto) -->
+            <div class="w-full max-w-2xl lg:max-w-3xl relative">
+                <form id="search-form" class="relative flex items-center glass-card bg-white/80 dark:bg-[#1C1C1E]/85 border border-white/70 dark:border-white/[0.15] rounded-2xl lg:rounded-[20px] focus-within:ring-2 focus-within:ring-[#007AFF]/60 transition-all overflow-hidden shadow-lg">
                     <!-- Ícono Lupa Spotlight a la izquierda -->
-                    <div class="pl-3.5 sm:pl-4 pr-1 text-slate-400 dark:text-white/45 pointer-events-none flex items-center">
-                        <i data-lucide="search" class="w-4 h-4"></i>
+                    <div class="pl-4 sm:pl-5 pr-1 text-slate-400 dark:text-white/50 pointer-events-none flex items-center">
+                        <i data-lucide="search" class="w-5 h-5"></i>
                     </div>
 
-                    <!-- Input de texto (16px en móvil para evitar zoom de Safari, 15px en PC) -->
+                    <!-- Input de texto amplio -->
                     <input
                         id="search-input"
                         type="search"
-                         enterkeyhint="search"
+                        enterkeyhint="search"
                         autocomplete="off"
                         autocorrect="off"
                         autocapitalize="none"
-                        placeholder="Buscar en la web o calcular (ej: 1500+21%)..."
-                        class="w-full bg-transparent px-2.5 sm:px-3 py-3 sm:py-3.5 text-base sm:text-[15px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 focus:outline-none"
+                        placeholder="Buscar en la web o calcular (ej: 1500+21% o !yt música)..."
+                        class="w-full bg-transparent px-3 sm:px-4 py-3.5 sm:py-4 text-base sm:text-[16px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/45 focus:outline-none"
                     >
 
                     <!-- Selector de Motor integrado como píldora derecha -->
-                    <div class="relative flex items-center pr-2 shrink-0">
-                        <select id="search-engine" aria-label="Motor de búsqueda" class="appearance-none bg-black/[0.05] dark:bg-white/[0.1] hover:bg-black/[0.08] dark:hover:bg-white/[0.15] pl-2.5 sm:pl-3 pr-6 sm:pr-7 py-1.5 rounded-xl text-xs font-medium text-slate-700 dark:text-white/85 focus:outline-none cursor-pointer transition">
+                    <div class="relative flex items-center pr-2.5 sm:pr-3 shrink-0">
+                        <select id="search-engine" aria-label="Motor de búsqueda" class="appearance-none bg-black/[0.06] dark:bg-white/[0.12] hover:bg-black/[0.1] dark:hover:bg-white/[0.18] pl-3.5 pr-8 py-2 rounded-xl text-xs sm:text-sm font-medium text-slate-700 dark:text-white/90 focus:outline-none cursor-pointer transition">
                             <option value="google" class="bg-white dark:bg-[#1C1C1E]">Google</option>
                             <option value="youtube" class="bg-white dark:bg-[#1C1C1E]">YouTube</option>
                             <option value="duckduckgo" class="bg-white dark:bg-[#1C1C1E]">DuckDuckGo</option>
                             <option value="wikipedia" class="bg-white dark:bg-[#1C1C1E]">Wikipedia</option>
                             <option value="maps" class="bg-white dark:bg-[#1C1C1E]">Maps</option>
                         </select>
-                        <i data-lucide="chevrons-up-down" class="w-3 h-3 text-slate-400 dark:text-white/50 absolute right-3.5 sm:right-4 pointer-events-none"></i>
+                        <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5 text-slate-400 dark:text-white/50 absolute right-5 pointer-events-none"></i>
                     </div>
 
                     <button type="submit" class="hidden" aria-label="Buscar"></button>
                 </form>
 
                 <!-- Respuesta instantánea Spotlight (Cálculo en vivo o comando detectado) -->
-                <div id="search-helper" class="hidden mt-2 px-4 py-2.5 rounded-2xl glass-card bg-white/90 dark:bg-[#1C1C1E]/95 border border-[#007AFF]/30 text-xs sm:text-sm items-center justify-between text-slate-800 dark:text-white">
+                <div id="search-helper" class="hidden mt-2.5 px-5 py-3 rounded-2xl glass-card bg-white/90 dark:bg-[#1C1C1E]/95 border border-[#007AFF]/30 text-xs sm:text-sm items-center justify-between text-slate-800 dark:text-white">
                     <span id="search-helper-text" class="font-semibold text-[#007AFF] dark:text-[#0A84FF]"></span>
-                    <button id="search-helper-copy" type="button" class="text-xs font-medium px-3 py-1 rounded-full bg-[#007AFF] text-white active:scale-95 hover:opacity-90 transition ml-3">Copiar</button>
+                    <button id="search-helper-copy" type="button" class="text-xs font-medium px-3.5 py-1.5 rounded-full bg-[#007AFF] text-white active:scale-95 hover:opacity-90 transition ml-3">Copiar</button>
                 </div>
             </div>
         </section>
 
-        <!-- ACCESOS RÁPIDOS ESTILO LAUNCHPAD / iOS HOME SCREEN -->
+        <!-- ACCESOS RÁPIDOS ESTILO LAUNCHPAD / iOS HOME SCREEN (Expandidos en Widescreen) -->
         <section class="w-full">
-            <div class="flex items-center justify-between gap-2 mb-3 px-0.5">
-                <!-- Segmented Control estilo iOS para Categorías (Scrollable en móvil) -->
-                <div id="category-filters" class="glass-card bg-black/[0.05] dark:bg-white/[0.08] p-1 rounded-full flex items-center gap-0.5 overflow-x-auto no-scrollbar max-w-full">
-                    <button data-cat="todos" class="cat-pill px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm transition shrink-0">Todos</button>
-                    <button data-cat="frecuentes" class="cat-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0">Frecuentes</button>
-                    <button data-cat="trabajo" class="cat-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0">Trabajo & IA</button>
-                    <button data-cat="ocio" class="cat-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0">Ocio</button>
+            <div class="flex items-center justify-between gap-3 mb-4 px-0.5">
+                <!-- Segmented Control estilo iOS para Categorías -->
+                <div id="category-filters" class="glass-card bg-black/[0.05] dark:bg-white/[0.08] p-1 rounded-full flex items-center gap-1 overflow-x-auto no-scrollbar max-w-full">
+                    <button data-cat="todos" class="cat-pill px-3.5 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm transition shrink-0">Todos</button>
+                    <button data-cat="frecuentes" class="cat-pill px-3.5 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0">Frecuentes</button>
+                    <button data-cat="trabajo" class="cat-pill px-3.5 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0">Trabajo & IA</button>
+                    <button data-cat="ocio" class="cat-pill px-3.5 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0">Ocio</button>
                 </div>
 
-                <!-- Botones Editar (para borrar en celular) + Nuevo Ícono -->
-                <div class="flex items-center gap-1.5 shrink-0">
-                    <button id="edit-links-btn" class="glass-card bg-white/70 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] text-xs font-medium text-slate-600 dark:text-white/75 active:scale-95 flex items-center gap-1 px-3 py-1.5 rounded-full transition" title="Editar o borrar íconos">
+                <!-- Botones Editar + Nuevo Ícono -->
+                <div class="flex items-center gap-2 shrink-0">
+                    <button id="edit-links-btn" class="glass-card bg-white/70 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] text-xs sm:text-sm font-medium text-slate-600 dark:text-white/80 active:scale-95 flex items-center gap-1.5 px-4 py-2 rounded-full transition" title="Editar o borrar íconos">
                         <span id="edit-links-label">Editar</span>
                     </button>
-                    <button id="add-link-btn" class="glass-card bg-white/70 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] text-xs font-semibold accent-text hover:scale-[1.02] active:scale-95 flex items-center gap-1 px-3 sm:px-3.5 py-1.5 rounded-full transition">
-                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                    <button id="add-link-btn" class="glass-card bg-white/70 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] text-xs sm:text-sm font-semibold accent-text hover:scale-[1.02] active:scale-95 flex items-center gap-1.5 px-4 py-2 rounded-full transition">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
                         <span>Nuevo</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Grilla estilo Dock / iOS Home Screen (4 columnas en celular, 8 en PC) -->
-            <div id="links-grid" class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-2.5 sm:gap-3.5">
+            <!-- Grilla estilo Dock / Launchpad (4 columnas en celular, hasta 8-10 en monitores grandes con buen espacio) -->
+            <div id="links-grid" class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3 sm:gap-4 lg:gap-5">
                 <!-- Se genera dinámicamente por JS -->
             </div>
         </section>
 
-        <!-- WIDGETS BENTO APPLE (Recordatorios, Notas de Apple y Calculadora Primero + Foco Después) -->
-        <section id="widgets-section" class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 transition-all duration-300">
+        <!-- WIDGETS BENTO APPLE AMPLIOS (3 Columnas Espaciosas en PC) -->
+        <section id="widgets-section" class="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8 items-stretch transition-all duration-300">
 
             <!-- 1. RECORDATORIOS (Estilo Apple Reminders) -->
-            <div class="glass-card bg-white/75 dark:bg-[#1C1C1E]/75 border border-white/70 dark:border-white/[0.12] rounded-[28px] p-4 sm:p-5 flex flex-col h-72 sm:h-76">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2">
-                        <div class="w-6 h-6 rounded-full accent-bg text-white flex items-center justify-center shadow-sm">
-                            <i data-lucide="list-todo" class="w-3.5 h-3.5"></i>
+            <div class="lg:col-span-4 glass-card bg-white/75 dark:bg-[#1C1C1E]/80 border border-white/70 dark:border-white/[0.12] rounded-[30px] p-5 sm:p-6 xl:p-7 flex flex-col min-h-[340px] lg:h-[370px]">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-full accent-bg text-white flex items-center justify-center shadow-sm">
+                            <i data-lucide="list-todo" class="w-4 h-4"></i>
                         </div>
-                        <h3 class="text-sm font-semibold tracking-tight">Recordatorios</h3>
+                        <h3 class="text-base font-semibold tracking-tight">Recordatorios</h3>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button id="todo-filter-btn" class="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-slate-600 dark:text-white/70 active:scale-95 transition" title="Alternar entre Todos y Pendientes">
+                    <div class="flex items-center gap-2.5">
+                        <button id="todo-filter-btn" class="text-xs font-medium px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-slate-600 dark:text-white/75 active:scale-95 transition" title="Alternar entre Todos y Pendientes">
                             Todos
                         </button>
-                        <span id="todo-count" class="text-xs font-bold accent-text tabular-nums">0</span>
-                        <button id="clear-completed-btn" class="text-[11px] font-medium text-slate-400 dark:text-white/40 hover:text-[#FF453A] active:text-[#FF453A] transition" title="Limpiar completadas">
+                        <span id="todo-count" class="text-sm font-bold accent-text tabular-nums">0</span>
+                        <button id="clear-completed-btn" class="text-xs font-medium text-slate-400 dark:text-white/45 hover:text-[#FF453A] active:text-[#FF453A] transition" title="Limpiar completadas">
                             Limpiar
                         </button>
                     </div>
                 </div>
 
-                <!-- Formulario nuevo recordatorio (text-base en móvil para evitar zoom en iOS) -->
-                <form id="todo-form" class="flex gap-2 mb-3">
+                <!-- Formulario nuevo recordatorio -->
+                <form id="todo-form" class="flex gap-2.5 mb-3.5">
                     <input
                         id="todo-input"
                         type="text"
                         enterkeyhint="done"
                         placeholder="Nuevo recordatorio..."
-                        class="w-full bg-black/[0.04] dark:bg-white/[0.07] border border-transparent accent-border rounded-full px-3.5 py-1.5 text-base sm:text-sm focus:outline-none transition"
+                        class="w-full bg-black/[0.04] dark:bg-white/[0.07] border border-transparent accent-border rounded-full px-4 py-2.5 text-base sm:text-sm focus:outline-none transition"
                     >
-                    <button type="submit" class="accent-bg hover:opacity-90 active:scale-95 text-white w-9 h-9 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition shrink-0 shadow-sm" title="Agregar">
+                    <button type="submit" class="accent-bg hover:opacity-90 active:scale-95 text-white w-10 h-10 rounded-full flex items-center justify-center transition shrink-0 shadow-sm" title="Agregar">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                     </button>
                 </form>
@@ -369,23 +369,23 @@
             </div>
 
             <!-- 2. NOTAS (Estilo Apple Notes) -->
-            <div class="glass-card bg-white/75 dark:bg-[#1C1C1E]/75 border border-white/70 dark:border-white/[0.12] rounded-[28px] p-4 sm:p-5 flex flex-col h-72 sm:h-76">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2">
-                        <div class="w-6 h-6 rounded-full bg-[#FFCC00] text-slate-900 flex items-center justify-center shadow-sm">
-                            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+            <div class="lg:col-span-4 glass-card bg-white/75 dark:bg-[#1C1C1E]/80 border border-white/70 dark:border-white/[0.12] rounded-[30px] p-5 sm:p-6 xl:p-7 flex flex-col min-h-[340px] lg:h-[370px]">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-full bg-[#FFCC00] text-slate-900 flex items-center justify-center shadow-sm">
+                            <i data-lucide="file-text" class="w-4 h-4"></i>
                         </div>
-                        <h3 class="text-sm font-semibold tracking-tight">Notas</h3>
+                        <h3 class="text-base font-semibold tracking-tight">Notas</h3>
                     </div>
-                    <div class="flex items-center gap-1.5">
-                        <span id="notes-char-count" class="text-[10px] text-slate-400 dark:text-white/35 tabular-nums">0 car.</span>
+                    <div class="flex items-center gap-2">
+                        <span id="notes-char-count" class="text-xs text-slate-400 dark:text-white/40 tabular-nums">0 car.</span>
                         <span class="text-slate-300 dark:text-white/20">·</span>
-                        <span id="notes-status" class="text-[11px] text-slate-400 dark:text-white/40 mr-1">iCloud Sync</span>
-                        <button id="copy-notes-btn" class="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 active:scale-90 text-slate-500 dark:text-white/60 transition" title="Copiar nota">
-                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        <span id="notes-status" class="text-xs text-slate-400 dark:text-white/45 mr-1">Sincronizado</span>
+                        <button id="copy-notes-btn" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 active:scale-90 text-slate-500 dark:text-white/65 transition" title="Copiar nota">
+                            <i data-lucide="copy" class="w-4 h-4"></i>
                         </button>
-                        <button id="clear-notes-btn" class="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 active:scale-90 text-slate-500 dark:text-white/60 hover:text-[#FF453A] transition" title="Borrar todo">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        <button id="clear-notes-btn" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 active:scale-90 text-slate-500 dark:text-white/65 hover:text-[#FF453A] transition" title="Borrar todo">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>
                 </div>
@@ -393,81 +393,81 @@
                 <textarea
                     id="notes-area"
                     placeholder="Escribí una nota rápida... Se sincroniza automáticamente en la nube entre tu PC y tu celular."
-                    class="w-full flex-1 bg-black/[0.03] dark:bg-white/[0.05] border border-transparent focus:border-[#FFCC00]/60 rounded-2xl p-3 text-base sm:text-sm leading-relaxed resize-none focus:outline-none transition"
+                    class="w-full flex-1 bg-black/[0.03] dark:bg-white/[0.05] border border-transparent focus:border-[#FFCC00]/60 rounded-2xl p-4 text-base sm:text-sm leading-relaxed resize-none focus:outline-none transition"
                 ></textarea>
             </div>
 
             <!-- 3. CALCULADORA iOS (PRIMERO) Y FOCO (SEGUNDO) -->
-            <div class="glass-card bg-white/75 dark:bg-[#1C1C1E]/75 border border-white/70 dark:border-white/[0.12] rounded-[28px] p-4 sm:p-5 flex flex-col h-72 sm:h-76">
+            <div class="lg:col-span-4 glass-card bg-white/75 dark:bg-[#1C1C1E]/80 border border-white/70 dark:border-white/[0.12] rounded-[30px] p-5 sm:p-6 xl:p-7 flex flex-col min-h-[340px] lg:h-[370px]">
                 <!-- Segmented Control del Widget: Calculadora Primero, Foco Después -->
-                <div class="flex items-center justify-between mb-2.5">
-                    <div class="flex bg-black/[0.06] dark:bg-white/[0.08] p-0.5 rounded-full text-xs font-medium">
-                        <button id="tab-calc" class="px-3.5 py-1 rounded-full bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm transition">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex bg-black/[0.06] dark:bg-white/[0.08] p-1 rounded-full text-xs sm:text-sm font-medium">
+                        <button id="tab-calc" class="px-4 py-1 rounded-full bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm transition">
                             Calculadora
                         </button>
-                        <button id="tab-timer" class="px-3.5 py-1 rounded-full text-slate-500 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition">
+                        <button id="tab-timer" class="px-4 py-1 rounded-full text-slate-500 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition">
                             Foco
                         </button>
                     </div>
                     <i data-lucide="calculator" class="w-4 h-4 text-slate-400 dark:text-white/40"></i>
                 </div>
 
-                <!-- Vista 1 (Activa por defecto): Calculadora estilo iOS (Botones redondos, % y Naranja #FF9F0A) -->
+                <!-- Vista 1 (Activa por defecto): Calculadora estilo iOS con botones más amplios -->
                 <div id="panel-calc" class="flex-1 flex flex-col justify-between">
-                    <div class="relative mb-1.5">
+                    <div class="relative mb-2">
                         <input
                             id="calc-display"
                             type="text"
                             placeholder="0"
                             readonly
-                            class="w-full bg-transparent px-2 py-0.5 text-right text-2xl font-light tabular-nums text-slate-900 dark:text-white focus:outline-none select-all"
+                            class="w-full bg-black/[0.03] dark:bg-white/[0.04] rounded-2xl px-3.5 py-2 text-right text-3xl font-light tabular-nums text-slate-900 dark:text-white focus:outline-none select-all"
                         >
                     </div>
-                    <div class="grid grid-cols-4 gap-1.5 flex-1 text-xs sm:text-[13px] font-semibold select-none">
-                        <button data-calc="C" class="rounded-full bg-[#D4D4D2] dark:bg-[#A5A5A5] text-black active:scale-95 active:brightness-90 transition">AC</button>
-                        <button data-calc="BACK" class="rounded-full bg-[#D4D4D2] dark:bg-[#A5A5A5] text-black active:scale-95 active:brightness-90 transition" title="Borrar último">⌫</button>
-                        <button data-calc="%" class="rounded-full bg-[#D4D4D2] dark:bg-[#A5A5A5] text-black active:scale-95 active:brightness-90 transition font-bold" title="Porcentaje (ej: 1000+21%)">%</button>
-                        <button data-calc="/" class="rounded-full bg-[#FF9F0A] text-white text-sm active:scale-95 active:brightness-110 transition">÷</button>
+                    <div class="grid grid-cols-4 gap-2 sm:gap-2.5 flex-1 text-sm sm:text-base font-semibold select-none">
+                        <button data-calc="C" class="rounded-2xl bg-[#D4D4D2] dark:bg-[#A5A5A5] text-black active:scale-95 hover:brightness-95 transition">AC</button>
+                        <button data-calc="BACK" class="rounded-2xl bg-[#D4D4D2] dark:bg-[#A5A5A5] text-black active:scale-95 hover:brightness-95 transition" title="Borrar último">⌫</button>
+                        <button data-calc="%" class="rounded-2xl bg-[#D4D4D2] dark:bg-[#A5A5A5] text-black active:scale-95 hover:brightness-95 transition font-bold" title="Porcentaje (ej: 1000+21%)">%</button>
+                        <button data-calc="/" class="rounded-2xl bg-[#FF9F0A] text-white text-lg active:scale-95 hover:brightness-110 transition">÷</button>
 
-                        <button data-calc="7" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">7</button>
-                        <button data-calc="8" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">8</button>
-                        <button data-calc="9" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">9</button>
-                        <button data-calc="*" class="rounded-full bg-[#FF9F0A] text-white text-sm active:scale-95 active:brightness-110 transition">×</button>
+                        <button data-calc="7" class="rounded-2xl bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 hover:bg-black/10 dark:hover:bg-[#444444] transition">7</button>
+                        <button data-calc="8" class="rounded-2xl bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 hover:bg-black/10 dark:hover:bg-[#444444] transition">8</button>
+                        <button data-calc="9" class="rounded-2xl bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 hover:bg-black/10 dark:hover:bg-[#444444] transition">9</button>
+                        <button data-calc="*" class="rounded-2xl bg-[#FF9F0A] text-white text-lg active:scale-95 hover:brightness-110 transition">×</button>
 
-                        <button data-calc="4" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">4</button>
-                        <button data-calc="5" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">5</button>
-                        <button data-calc="6" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">6</button>
-                        <button data-calc="-" class="rounded-full bg-[#FF9F0A] text-white text-sm active:scale-95 active:brightness-110 transition">−</button>
+                        <button data-calc="4" class="rounded-2xl bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 hover:bg-black/10 dark:hover:bg-[#444444] transition">4</button>
+                        <button data-calc="5" class="rounded-2xl bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 hover:bg-black/10 dark:hover:bg-[#444444] transition">5</button>
+                        <button data-calc="6" class="rounded-2xl bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 hover:bg-black/10 dark:hover:bg-[#444444] transition">6</button>
+                        <button data-calc="-" class="rounded-2xl bg-[#FF9F0A] text-white text-lg active:scale-95 hover:brightness-110 transition">−</button>
 
-                        <button data-calc="1" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">1</button>
-                        <button data-calc="2" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">2</button>
-                        <button data-calc="3" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">3</button>
-                        <button data-calc="+" class="rounded-full bg-[#FF9F0A] text-white text-sm active:scale-95 active:brightness-110 transition">+</button>
+                        <button data-calc="1" class="rounded-2xl bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 hover:bg-black/10 dark:hover:bg-[#444444] transition">1</button>
+                        <button data-calc="2" class="rounded-2xl bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 hover:bg-black/10 dark:hover:bg-[#444444] transition">2</button>
+                        <button data-calc="3" class="rounded-2xl bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 hover:bg-black/10 dark:hover:bg-[#444444] transition">3</button>
+                        <button data-calc="+" class="rounded-2xl bg-[#FF9F0A] text-white text-lg active:scale-95 hover:brightness-110 transition">+</button>
 
-                        <button data-calc="0" class="col-span-2 rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white text-left pl-5 active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">0</button>
-                        <button data-calc="." class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">.</button>
-                        <button data-calc="=" class="rounded-full bg-[#FF9F0A] text-white text-sm active:scale-95 active:brightness-110 transition">=</button>
+                        <button data-calc="0" class="col-span-2 rounded-2xl bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white text-left pl-6 active:scale-95 hover:bg-black/10 dark:hover:bg-[#444444] transition">0</button>
+                        <button data-calc="." class="rounded-2xl bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 hover:bg-black/10 dark:hover:bg-[#444444] transition">.</button>
+                        <button data-calc="=" class="rounded-2xl bg-[#FF9F0A] text-white text-lg active:scale-95 hover:brightness-110 transition">=</button>
                     </div>
                 </div>
 
                 <!-- Vista 2 (Secundaria): Temporizador de Foco Apple -->
-                <div id="panel-timer" class="hidden flex-1 flex flex-col items-center justify-between py-1">
-                    <div class="flex gap-1.5 text-xs">
-                        <button data-time="1500" class="timer-preset px-3 py-1 rounded-full bg-[#007AFF]/15 text-[#007AFF] dark:text-[#0A84FF] font-medium active:scale-95 transition">25m Foco</button>
-                        <button data-time="300" class="timer-preset px-3 py-1 rounded-full bg-black/[0.05] dark:bg-white/[0.08] text-slate-600 dark:text-white/70 active:scale-95 transition">5m Pausa</button>
-                        <button data-time="900" class="timer-preset px-3 py-1 rounded-full bg-black/[0.05] dark:bg-white/[0.08] text-slate-600 dark:text-white/70 active:scale-95 transition">15m</button>
+                <div id="panel-timer" class="hidden flex-1 flex flex-col items-center justify-between py-2">
+                    <div class="flex gap-2 text-xs sm:text-sm">
+                        <button data-time="1500" class="timer-preset px-3.5 py-1.5 rounded-full bg-[#007AFF]/15 text-[#007AFF] dark:text-[#0A84FF] font-medium active:scale-95 transition">25m Foco</button>
+                        <button data-time="300" class="timer-preset px-3.5 py-1.5 rounded-full bg-black/[0.05] dark:bg-white/[0.08] text-slate-600 dark:text-white/70 active:scale-95 transition">5m Pausa</button>
+                        <button data-time="900" class="timer-preset px-3.5 py-1.5 rounded-full bg-black/[0.05] dark:bg-white/[0.08] text-slate-600 dark:text-white/70 active:scale-95 transition">15m</button>
                     </div>
 
-                    <div id="timer-display" class="text-5xl font-light tabular-nums tracking-tight text-slate-900 dark:text-white my-1">
+                    <div id="timer-display" class="text-6xl font-light tabular-nums tracking-tight text-slate-900 dark:text-white my-2">
                         25:00
                     </div>
 
-                    <div class="flex items-center gap-2 w-full">
-                        <button id="timer-start" class="flex-1 bg-[#007AFF] hover:bg-[#007AFF]/90 active:scale-95 text-white py-2.5 rounded-full text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-sm">
-                            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                    <div class="flex items-center gap-2.5 w-full">
+                        <button id="timer-start" class="flex-1 bg-[#007AFF] hover:bg-[#007AFF]/90 active:scale-95 text-white py-3 rounded-full text-sm font-semibold transition flex items-center justify-center gap-2 shadow-sm">
+                            <i data-lucide="play" class="w-4 h-4"></i>
                             <span>Iniciar</span>
                         </button>
-                        <button id="timer-reset" class="p-2.5 rounded-full bg-black/[0.06] dark:bg-white/[0.1] hover:bg-black/[0.1] dark:hover:bg-white/[0.15] active:scale-95 text-slate-700 dark:text-white text-xs font-medium transition" title="Reiniciar">
+                        <button id="timer-reset" class="p-3 rounded-full bg-black/[0.06] dark:bg-white/[0.1] hover:bg-black/[0.1] dark:hover:bg-white/[0.15] active:scale-95 text-slate-700 dark:text-white text-sm font-medium transition" title="Reiniciar">
                             <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -476,24 +476,24 @@
 
         </section>
 
-        <!-- PIE DE PÁGINA MINIMALISTA (Adaptado a Celular y PC) -->
-        <footer class="flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-slate-500 dark:text-white/45 pt-1 pb-2">
-            <div class="hidden sm:flex items-center gap-2">
-                <span>Spotlight: presioná <kbd class="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-slate-700 dark:text-white/80 font-mono text-[11px]">/</kbd></span>
+        <!-- PIE DE PÁGINA MINIMALISTA (Con margen inferior cómodo para que nunca quede cortado) -->
+        <footer class="w-full flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-slate-500 dark:text-white/55 pt-2 pb-3">
+            <div class="hidden sm:flex items-center gap-2.5">
+                <span>Spotlight: presioná <kbd class="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-slate-700 dark:text-white/85 font-mono text-xs">/</kbd></span>
                 <span>·</span>
-                <span>Comandos: <kbd class="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-slate-700 dark:text-white/80 font-mono text-[11px]">!yt</kbd> <kbd class="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-slate-700 dark:text-white/80 font-mono text-[11px]">!w</kbd> <kbd class="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-slate-700 dark:text-white/80 font-mono text-[11px]">!m</kbd></span>
+                <span>Comandos: <kbd class="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-slate-700 dark:text-white/85 font-mono text-xs">!yt</kbd> <kbd class="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-slate-700 dark:text-white/85 font-mono text-xs">!w</kbd> <kbd class="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-slate-700 dark:text-white/85 font-mono text-xs">!m</kbd></span>
             </div>
-            <div class="flex items-center justify-center gap-4 w-full sm:w-auto">
-                <button id="install-guide-btn" class="sm:hidden hover:text-[#007AFF] flex items-center gap-1 font-medium text-[#007AFF] dark:text-[#0A84FF]">
-                    <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+            <div class="flex items-center justify-center gap-5 w-full sm:w-auto">
+                <button id="install-guide-btn" class="sm:hidden hover:text-[#007AFF] flex items-center gap-1.5 font-medium text-[#007AFF] dark:text-[#0A84FF]">
+                    <i data-lucide="smartphone" class="w-4 h-4"></i>
                     Usar en Celular
                 </button>
-                <button id="export-data-btn" class="hover:text-[#007AFF] transition flex items-center gap-1" title="Guardar copia de seguridad">
-                    <i data-lucide="share" class="w-3.5 h-3.5"></i>
+                <button id="export-data-btn" class="hover:text-[#007AFF] transition flex items-center gap-1.5" title="Guardar copia de seguridad">
+                    <i data-lucide="share" class="w-4 h-4"></i>
                     Exportar
                 </button>
-                <label class="hover:text-[#007AFF] transition flex items-center gap-1 cursor-pointer" title="Cargar copia de seguridad">
-                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <label class="hover:text-[#007AFF] transition flex items-center gap-1.5 cursor-pointer" title="Cargar copia de seguridad">
+                    <i data-lucide="download" class="w-4 h-4"></i>
                     Importar
                     <input id="import-data-input" type="file" accept=".json" class="hidden">
                 </label>
@@ -1188,21 +1188,21 @@
                 const initial = encodeURIComponent((link.title || 'S').charAt(0).toUpperCase());
 
                 const card = document.createElement('div');
-                card.className = 'link-card-item group relative glass-card bg-white/70 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] hover:scale-[1.03] active:scale-95 rounded-[22px] p-2.5 sm:p-3 flex flex-col items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200';
+                card.className = 'link-card-item group relative glass-card bg-white/70 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] hover:scale-[1.03] active:scale-95 rounded-[24px] p-3.5 sm:p-4 flex flex-col items-center justify-center gap-2 sm:gap-2.5 transition-all duration-200';
 
                 const deleteBadgeVisibility = state.editLinksMode
                     ? 'opacity-100 scale-100 bg-[#FF453A] text-white'
                     : 'opacity-0 group-hover:opacity-100 focus:opacity-100 bg-slate-200 dark:bg-[#3A3A3C] text-slate-600 dark:text-white/80 hover:bg-[#FF453A] hover:text-white';
 
                 card.innerHTML = `
-                    <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center gap-1.5 sm:gap-2 w-full min-w-0">
-                        <div class="w-11 h-11 sm:w-12 sm:h-12 apple-squircle bg-white dark:bg-[#2C2C2E] flex items-center justify-center p-2 shrink-0">
+                    <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center gap-2 sm:gap-2.5 w-full min-w-0">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 apple-squircle bg-white dark:bg-[#2C2C2E] flex items-center justify-center p-2.5 shrink-0">
                             <img src="${faviconUrl}" alt="${link.title}" class="w-full h-full object-contain rounded-md" onerror="this.src='https://placehold.co/64x64/007AFF/ffffff?text=${initial}'">
                         </div>
-                        <span class="text-[11px] sm:text-xs font-medium truncate max-w-full text-slate-800 dark:text-white/90">${link.title}</span>
+                        <span class="text-xs sm:text-[13px] font-medium truncate max-w-full text-slate-800 dark:text-white/95">${link.title}</span>
                     </a>
-                    <button data-delete-link="${link.id}" class="${deleteBadgeVisibility} absolute -top-1.5 -right-1.5 w-6 h-6 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shadow-md transition z-10" title="Eliminar ícono">
-                        <i data-lucide="minus" class="w-3.5 h-3.5 sm:w-3 sm:h-3"></i>
+                    <button data-delete-link="${link.id}" class="${deleteBadgeVisibility} absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center shadow-md transition z-10" title="Eliminar ícono">
+                        <i data-lucide="minus" class="w-3.5 h-3.5"></i>
                     </button>
                 `;
 
@@ -1232,9 +1232,9 @@
             btn.addEventListener('click', () => {
                 state.activeCategory = btn.getAttribute('data-cat');
                 document.querySelectorAll('.cat-pill').forEach(b => {
-                    b.className = 'cat-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0';
+                    b.className = 'cat-pill px-3.5 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0';
                 });
-                btn.className = 'cat-pill px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm transition shrink-0';
+                btn.className = 'cat-pill px-3.5 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm transition shrink-0';
                 renderLinks();
             });
         });
