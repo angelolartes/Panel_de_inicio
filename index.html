@@ -1,992 +1,1982 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutti Frutti Online - Firebase Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mi Inicio">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#090d16" id="meta-theme-color">
+    <title>Mi Inicio</title>
+
+    <!-- Ícono SVG para Pantalla de Inicio en iOS / Android -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230A84FF'/%3E%3Cstop offset='50%25' stop-color='%235E5CE6'/%3E%3Cstop offset='100%25' stop-color='%23BF5AF2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='40' fill='url(%23g)'/%3E%3Ccircle cx='90' cy='90' r='44' fill='none' stroke='white' stroke-width='10' stroke-opacity='0.9'/%3E%3Cpath d='M90 64v28l18 12' fill='none' stroke='white' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230A84FF'/%3E%3Cstop offset='50%25' stop-color='%235E5CE6'/%3E%3Cstop offset='100%25' stop-color='%23BF5AF2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='40' fill='url(%23g)'/%3E%3Ccircle cx='90' cy='90' r='44' fill='none' stroke='white' stroke-width='10' stroke-opacity='0.9'/%3E%3Cpath d='M90 64v28l18 12' fill='none' stroke='white' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <link rel="manifest" id="pwa-manifest">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        apple: {
+                            blue: '#007AFF',
+                            blueDark: '#0A84FF',
+                            orange: '#FF9F0A',
+                            green: '#30D158',
+                            red: '#FF453A',
+                            yellow: '#FFD60A',
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <!-- Google Fonts: Inter (Fallback para SF Pro) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
+        :root {
+            --apple-accent: #007AFF;
+            --sat: env(safe-area-inset-top, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+            --sal: env(safe-area-inset-left, 0px);
+            --sar: env(safe-area-inset-right, 0px);
+        }
+        html {
+            -webkit-text-size-adjust: 100%;
+            height: -webkit-fill-available;
+        }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.015em;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding-top: var(--sat);
+            padding-bottom: var(--sab);
+            padding-left: var(--sal);
+            padding-right: var(--sar);
+            overscroll-behavior-y: none;
+        }
+        button, a, input, select, textarea, label {
+            touch-action: manipulation;
+        }
+        .accent-bg {
+            background-color: var(--apple-accent) !important;
+        }
+        .accent-text {
+            color: var(--apple-accent) !important;
+        }
+        .accent-border:focus {
+            border-color: var(--apple-accent) !important;
+        }
+        /* Material Vibrancy estilo macOS / visionOS */
+        .glass-card {
+            backdrop-filter: saturate(190%) blur(28px);
+            -webkit-backdrop-filter: saturate(190%) blur(28px);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 0.45);
+        }
+        .dark .glass-card {
+            box-shadow: 0 14px 36px -10px rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+        }
+        /* Íconos Squircle estilo iOS / macOS Dock */
+        .apple-squircle {
+            border-radius: 22%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+        /* Reloj estilo iOS Lock Screen */
+        .apple-clock {
+            letter-spacing: -0.04em;
+            text-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+        }
+        /* Animación de edición de íconos estilo iOS Home Screen */
+        @keyframes ios-jiggle {
+            0% { transform: rotate(-1.4deg); }
+            50% { transform: rotate(1.4deg); }
+            100% { transform: rotate(-1.4deg); }
+        }
+        .jiggle-mode .link-card-item {
+            animation: ios-jiggle 0.28s infinite ease-in-out;
+        }
+        .jiggle-mode .link-card-item:nth-child(even) {
+            animation-delay: 0.08s;
+        }
+        /* Ocultar barra de scroll horizontal en tiras móviles */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Scrollbar minimalista general */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.5);
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 min-h-screen text-white flex flex-col justify-between">
+<body class="bg-[#F2F2F7] dark:bg-[#000000] text-slate-900 dark:text-white transition-colors duration-500 relative overflow-x-hidden selection:bg-[#007AFF] selection:text-white">
 
-    <!-- Header -->
-    <header class="w-full py-4 px-6 bg-black/40 backdrop-blur-md border-b border-white/10 flex justify-between items-center shadow-lg">
-        <div class="flex items-center space-x-3">
-            <div class="bg-gradient-to-tr from-pink-500 to-yellow-400 p-2.5 rounded-2xl shadow-lg">
-                <i class="fa-solid fa-gamepad text-xl text-white"></i>
-            </div>
-            <div>
-                <h1 class="text-xl font-extrabold tracking-wide bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-300 bg-clip-text text-transparent">TUTTI FRUTTI</h1>
-                <p class="text-xs text-purple-300" id="headerStatus">Modo Online (Firebase)</p>
-            </div>
-        </div>
-        <div class="flex items-center space-x-3">
-            <button onclick="openConfigModal()" class="bg-white/10 hover:bg-white/20 px-3 py-2 rounded-xl text-xs font-bold border border-white/10 transition">
-                <i class="fa-solid fa-gear mr-1"></i> Config Firebase
-            </button>
-            <div id="roomBadge" class="hidden bg-white/10 px-4 py-2 rounded-xl backdrop-blur-sm border border-white/10 text-sm flex items-center space-x-2">
-                <span class="text-purple-300">Sala:</span>
-                <span id="displayRoomCode" class="font-bold text-yellow-300 tracking-wider">----</span>
-                <button onclick="copyRoomCode()" class="text-xs text-pink-400 hover:text-pink-300 ml-1"><i class="fa-regular fa-copy"></i></button>
-            </div>
-        </div>
-    </header>
+    <!-- Capa de Fondo de Pantalla Personalizable -->
+    <div id="wallpaper-layer" class="fixed inset-0 pointer-events-none z-0 bg-cover bg-center bg-no-repeat transition-all duration-700 hidden"></div>
+    <div id="wallpaper-overlay" class="fixed inset-0 pointer-events-none z-0 bg-black/40 backdrop-blur-[2px] transition-all duration-300 hidden"></div>
 
-    <!-- Main Content Container -->
-    <main class="flex-grow flex items-center justify-center p-4 sm:p-6">
-        
-        <!-- Vista 0: Ingreso / Nombre de Usuario -->
-        <div id="loginView" class="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl shadow-2xl text-center">
-            <div class="inline-block p-4 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 mb-6 shadow-xl animate-bounce">
-                <i class="fa-solid fa-user-astronaut text-4xl text-white"></i>
-            </div>
-            <h2 class="text-3xl font-extrabold mb-3">¡Bienvenido!</h2>
-            <p class="text-purple-200 mb-6 text-sm">Ingresa tu apodo para unirte a las partidas online con amigos.</p>
-            
-            <div class="space-y-4 text-left mb-6">
-                <div>
-                    <label class="block text-sm font-medium text-purple-200 mb-2">Tu Apodo</label>
-                    <input type="text" id="nicknameInput" maxlength="15" placeholder="Ej. Sofi" 
-                        class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-pink-500 font-bold">
+    <!-- Fondo Dinámico estilo macOS Sequoia / iPadOS (visible por defecto) -->
+    <div id="default-orbs" class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute -top-40 -left-24 w-[24rem] sm:w-[34rem] h-[24rem] sm:h-[34rem] bg-[#007AFF]/20 dark:bg-[#0A84FF]/20 rounded-full blur-[100px] sm:blur-[110px]"></div>
+        <div class="absolute top-1/4 -right-32 w-[22rem] sm:w-[32rem] h-[22rem] sm:h-[32rem] bg-[#BF5AF2]/20 dark:bg-[#BF5AF2]/15 rounded-full blur-[100px] sm:blur-[120px]"></div>
+        <div class="absolute -bottom-40 left-1/4 w-[24rem] sm:w-[36rem] h-[24rem] sm:h-[36rem] bg-[#30D158]/15 dark:bg-[#5E5CE6]/20 rounded-full blur-[100px] sm:blur-[120px]"></div>
+    </div>
+
+    <!-- Contenedor Principal Adaptativo (Móvil + PC) -->
+    <div class="relative z-10 max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-7 flex flex-col gap-5 sm:gap-7 min-h-[100dvh] justify-between">
+
+        <!-- BARRA SUPERIOR ESTILO CONTROL CENTER / MACOS MENU BAR (Optimizada para Móvil y PC) -->
+        <header class="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center justify-between gap-2.5">
+            <!-- Fila Superior en Móvil: Saludo + Controles Rápidos -->
+            <div class="flex items-center justify-between gap-2">
+                <!-- Saludo y Usuario en Píldora -->
+                <div class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] px-3.5 py-2 rounded-full flex items-center gap-2 min-w-0">
+                    <span class="w-2 h-2 rounded-full bg-[#30D158] animate-pulse shrink-0"></span>
+                    <span id="greeting-text" class="text-xs sm:text-sm font-medium text-slate-600 dark:text-white/75 shrink-0">Hola,</span>
+                    <button id="edit-name-btn" class="text-xs sm:text-sm font-semibold accent-text hover:opacity-80 flex items-center gap-1 group truncate" title="Cambiar nombre">
+                        <span id="user-name-display" class="truncate max-w-[110px] sm:max-w-[160px]">Usuario</span>
+                        <i data-lucide="pencil" class="w-3 h-3 opacity-60 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0"></i>
+                    </button>
+                </div>
+
+                <!-- Grupo de Controles Rápidos en Móvil (visible a la derecha del saludo en pantallas chicas) -->
+                <div class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] p-1 rounded-full flex sm:hidden items-center gap-0.5 shrink-0">
+                    <button id="accent-btn-mobile" class="p-2 rounded-full text-slate-700 dark:text-white/80 active:bg-black/10 dark:active:bg-white/15 transition" title="Color de acento Apple">
+                        <i data-lucide="palette" class="w-4 h-4"></i>
+                    </button>
+                    <button id="wallpaper-btn-mobile" class="p-2 rounded-full text-slate-700 dark:text-white/80 active:bg-black/10 dark:active:bg-white/15 transition" title="Cambiar fondo de pantalla">
+                        <i data-lucide="image" class="w-4 h-4"></i>
+                    </button>
+                    <button id="zen-toggle-mobile" class="p-2 rounded-full text-slate-700 dark:text-white/80 active:bg-black/10 dark:active:bg-white/15 transition" title="Modo Zen">
+                        <i data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                    <button id="theme-toggle-mobile" class="p-2 rounded-full text-slate-700 dark:text-white/80 active:bg-black/10 dark:active:bg-white/15 transition" title="Cambiar modo claro/oscuro">
+                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-[#FFD60A]"></i>
+                        <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+                    </button>
                 </div>
             </div>
 
-            <button onclick="saveNickname()" class="w-full py-4 bg-gradient-to-r from-pink-500 to-yellow-500 hover:from-pink-600 hover:to-yellow-600 font-bold text-lg rounded-xl shadow-lg transition">
-                Continuar <i class="fa-solid fa-arrow-right ml-2"></i>
-            </button>
-        </div>
+            <!-- Píldoras de Estado: Nube + Dólar + Clima + Ajustes (Scroll horizontal suave en pantallas muy angostas) -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 sm:ml-auto">
+                <!-- Píldora de Estado de Sincronización en la Nube (Firestore) -->
+                <button id="cloud-sync-btn" class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] px-3.5 py-2 rounded-full flex items-center gap-2 text-xs sm:text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" title="Configurar sincronización en la nube entre PC y Celular">
+                    <span id="cloud-status-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    <i id="cloud-status-icon" data-lucide="cloud" class="w-3.5 h-3.5 text-[#007AFF] dark:text-[#0A84FF]"></i>
+                    <span id="cloud-status-text" class="font-medium text-slate-700 dark:text-white/85 text-xs">Conectando...</span>
+                </button>
 
-        <!-- Vista 1: Menú Principal -->
-        <div id="menuView" class="hidden w-full max-w-xl bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl shadow-2xl text-center">
-            <div class="inline-block p-4 rounded-full bg-gradient-to-tr from-pink-500 to-yellow-400 mb-6 shadow-xl">
-                <i class="fa-solid fa-globe text-4xl text-white"></i>
+                <!-- Cotización Dólar en vivo (DolarApi) -->
+                <button id="dolar-btn" class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] px-3.5 py-2 rounded-full flex items-center gap-1.5 text-xs sm:text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" title="Click para ver todas las cotizaciones">
+                    <span class="w-4 h-4 rounded-full bg-[#30D158]/20 text-[#30D158] flex items-center justify-center font-bold text-[10px]">$</span>
+                    <span class="text-slate-500 dark:text-white/60 text-xs font-medium">Blue</span>
+                    <span id="dolar-rate" class="font-semibold text-slate-800 dark:text-white tabular-nums">$---</span>
+                </button>
+
+                <!-- Widget de Clima -->
+                <button id="weather-btn" class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] px-3.5 py-2 rounded-full flex items-center gap-1.5 text-xs sm:text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" title="Click para cambiar ciudad">
+                    <i id="weather-icon" data-lucide="cloud-sun" class="w-4 h-4 text-[#FF9F0A]"></i>
+                    <span id="weather-temp" class="font-semibold tabular-nums">--°C</span>
+                    <span id="weather-city" class="text-slate-500 dark:text-white/60 text-xs font-medium truncate max-w-[90px] sm:max-w-none">Buenos Aires</span>
+                </button>
+
+                <!-- Grupo de Controles Rápidos en Desktop/Tablet -->
+                <div class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] p-1 rounded-full hidden sm:flex items-center gap-0.5 shrink-0">
+                    <button id="accent-btn" class="p-2 rounded-full text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/10 transition" title="Color de acento Apple">
+                        <i data-lucide="palette" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <button id="wallpaper-btn" class="p-2 rounded-full text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/10 transition" title="Cambiar fondo de pantalla">
+                        <i data-lucide="image" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <button id="zen-toggle" class="p-2 rounded-full text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/10 transition" title="Modo Zen (ocultar/mostrar widgets)">
+                        <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <button id="theme-toggle" class="p-2 rounded-full text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/10 transition" title="Cambiar modo claro/oscuro">
+                        <i data-lucide="sun" class="w-3.5 h-3.5 hidden dark:block text-[#FFD60A]"></i>
+                        <i data-lucide="moon" class="w-3.5 h-3.5 block dark:hidden"></i>
+                    </button>
+                </div>
             </div>
-            <h2 class="text-3xl font-extrabold mb-2">Hola, <span id="welcomeNickname" class="text-yellow-300"></span>!</h2>
-            <p class="text-purple-200 mb-8 text-sm">Crea una sala nueva o únete a una existente con su código.</p>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                <div class="bg-white/5 border border-white/10 p-6 rounded-2xl flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-bold text-lg text-pink-300 mb-2"><i class="fa-solid fa-plus-circle mr-2"></i>Crear Sala</h3>
-                        <p class="text-xs text-purple-200 mb-4">Crea una sala y comparte el código de 4 letras.</p>
+        </header>
+
+        <!-- SECCIÓN CENTRAL: Reloj iOS Lock Screen y Buscador Spotlight -->
+        <section class="flex flex-col items-center text-center my-0.5 sm:my-1">
+            <!-- Fecha arriba del reloj al estilo iOS 18 / macOS Sonoma -->
+            <p id="current-date" class="text-xs sm:text-sm font-semibold tracking-wide text-slate-600 dark:text-white/75 capitalize mb-0.5 drop-shadow-sm">
+                Cargando fecha...
+            </p>
+
+            <!-- Reloj Digital (Click o Tap para alternar formato 24h / 12h) -->
+            <div id="clock-container" class="mb-4 sm:mb-5 select-none cursor-pointer group active:scale-95 transition-transform" title="Tocá para cambiar entre formato 24h y 12h">
+                <div class="flex items-baseline justify-center gap-1.5">
+                    <h1 id="clock-time" class="apple-clock text-6xl sm:text-8xl font-semibold tracking-tighter text-slate-900 dark:text-white tabular-nums group-hover:scale-[1.01] transition-transform">
+                        00:00
+                    </h1>
+                    <div class="flex flex-col items-start">
+                        <span id="clock-ampm" class="hidden text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-[#007AFF]/15 text-[#007AFF] dark:text-[#0A84FF] mb-0.5">
+                            AM
+                        </span>
+                        <span id="clock-seconds" class="text-base sm:text-xl font-medium text-slate-400 dark:text-white/45 tabular-nums w-7 text-left">
+                            00
+                        </span>
                     </div>
-                    <button onclick="createRoom()" class="w-full py-3 bg-gradient-to-r from-pink-500 to-purple-600 font-bold rounded-xl shadow hover:opacity-95 transition">Crear Sala</button>
                 </div>
+            </div>
 
-                <div class="bg-white/5 border border-white/10 p-6 rounded-2xl flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-bold text-lg text-yellow-300 mb-2"><i class="fa-solid fa-right-to-bracket mr-2"></i>Unirse a Sala</h3>
-                        <p class="text-xs text-purple-200 mb-4">Introduce el código de 4 letras de tu amigo.</p>
+            <!-- Barra de Búsqueda Estilo macOS / iOS Spotlight (text-base en móvil evita auto-zoom en iOS) -->
+            <div class="w-full max-w-xl relative">
+                <form id="search-form" class="relative flex items-center glass-card bg-white/80 dark:bg-[#1C1C1E]/85 border border-white/70 dark:border-white/[0.15] rounded-2xl focus-within:ring-2 focus-within:ring-[#007AFF]/60 transition-all overflow-hidden">
+                    <!-- Ícono Lupa Spotlight a la izquierda -->
+                    <div class="pl-3.5 sm:pl-4 pr-1 text-slate-400 dark:text-white/45 pointer-events-none flex items-center">
+                        <i data-lucide="search" class="w-4 h-4"></i>
                     </div>
-                    <button onclick="promptJoinRoom()" class="w-full py-3 bg-gradient-to-r from-yellow-500 to-amber-600 font-bold rounded-xl shadow hover:opacity-95 transition">Unirse</button>
-                </div>
-            </div>
 
-            <button onclick="logoutUser()" class="text-xs text-purple-300 hover:text-white underline">Cambiar mi apodo</button>
-        </div>
+                    <!-- Input de texto (16px en móvil para evitar zoom de Safari, 15px en PC) -->
+                    <input
+                        id="search-input"
+                        type="search"
+                         enterkeyhint="search"
+                        autocomplete="off"
+                        autocorrect="off"
+                        autocapitalize="none"
+                        placeholder="Buscar en la web o calcular (ej: 1500+21%)..."
+                        class="w-full bg-transparent px-2.5 sm:px-3 py-3 sm:py-3.5 text-base sm:text-[15px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 focus:outline-none"
+                    >
 
-        <!-- Vista 2: Sala de Espera (Lobby) -->
-        <div id="lobbyView" class="hidden w-full max-w-xl bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl shadow-2xl text-center">
-            <h2 class="text-3xl font-extrabold mb-1">Sala de Espera</h2>
-            <p class="text-purple-200 text-sm mb-6">Comparte el código con hasta 4 amigos.</p>
-            
-            <div class="bg-black/30 border border-white/10 p-4 rounded-2xl mb-6">
-                <span class="text-xs text-purple-300 block mb-1">CÓDIGO DE SALA</span>
-                <span id="lobbyRoomCode" class="text-4xl font-extrabold text-yellow-300 tracking-widest">----</span>
-            </div>
-
-            <div class="mb-6 text-left">
-                <h3 class="text-sm font-bold text-purple-200 mb-3"><i class="fa-solid fa-users mr-2"></i>Jugadores Conectados (<span id="playerCount">0</span>/4)</h3>
-                <div id="playersListContainer" class="space-y-2 max-h-40 overflow-y-auto pr-1">
-                    <!-- Dinámico -->
-                </div>
-            </div>
-
-            <div id="hostControls" class="hidden space-y-4">
-                <div class="grid grid-cols-2 gap-4 text-left">
-                    <div>
-                        <label class="block text-xs text-purple-200 mb-1">Rondas</label>
-                        <select id="lobbyRounds" class="w-full bg-white/10 border border-white/25 rounded-xl px-3 py-2 text-sm text-white">
-                            <option value="3" class="bg-gray-900">3 Rondas</option>
-                            <option value="5" selected class="bg-gray-900">5 Rondas</option>
-                            <option value="10" class="bg-gray-900">10 Rondas</option>
+                    <!-- Selector de Motor integrado como píldora derecha -->
+                    <div class="relative flex items-center pr-2 shrink-0">
+                        <select id="search-engine" aria-label="Motor de búsqueda" class="appearance-none bg-black/[0.05] dark:bg-white/[0.1] hover:bg-black/[0.08] dark:hover:bg-white/[0.15] pl-2.5 sm:pl-3 pr-6 sm:pr-7 py-1.5 rounded-xl text-xs font-medium text-slate-700 dark:text-white/85 focus:outline-none cursor-pointer transition">
+                            <option value="google" class="bg-white dark:bg-[#1C1C1E]">Google</option>
+                            <option value="youtube" class="bg-white dark:bg-[#1C1C1E]">YouTube</option>
+                            <option value="duckduckgo" class="bg-white dark:bg-[#1C1C1E]">DuckDuckGo</option>
+                            <option value="wikipedia" class="bg-white dark:bg-[#1C1C1E]">Wikipedia</option>
+                            <option value="maps" class="bg-white dark:bg-[#1C1C1E]">Maps</option>
                         </select>
+                        <i data-lucide="chevrons-up-down" class="w-3 h-3 text-slate-400 dark:text-white/50 absolute right-3.5 sm:right-4 pointer-events-none"></i>
                     </div>
-                    <div>
-                        <label class="block text-xs text-purple-200 mb-1">Tiempo (seg)</label>
-                        <select id="lobbyTime" class="w-full bg-white/10 border border-white/25 rounded-xl px-3 py-2 text-sm text-white">
-                            <option value="45" class="bg-gray-900">45s</option>
-                            <option value="60" selected class="bg-gray-900">60s</option>
-                            <option value="90" class="bg-gray-900">90s</option>
-                        </select>
+
+                    <button type="submit" class="hidden" aria-label="Buscar"></button>
+                </form>
+
+                <!-- Respuesta instantánea Spotlight (Cálculo en vivo o comando detectado) -->
+                <div id="search-helper" class="hidden mt-2 px-4 py-2.5 rounded-2xl glass-card bg-white/90 dark:bg-[#1C1C1E]/95 border border-[#007AFF]/30 text-xs sm:text-sm items-center justify-between text-slate-800 dark:text-white">
+                    <span id="search-helper-text" class="font-semibold text-[#007AFF] dark:text-[#0A84FF]"></span>
+                    <button id="search-helper-copy" type="button" class="text-xs font-medium px-3 py-1 rounded-full bg-[#007AFF] text-white active:scale-95 hover:opacity-90 transition ml-3">Copiar</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACCESOS RÁPIDOS ESTILO LAUNCHPAD / iOS HOME SCREEN -->
+        <section class="w-full">
+            <div class="flex items-center justify-between gap-2 mb-3 px-0.5">
+                <!-- Segmented Control estilo iOS para Categorías (Scrollable en móvil) -->
+                <div id="category-filters" class="glass-card bg-black/[0.05] dark:bg-white/[0.08] p-1 rounded-full flex items-center gap-0.5 overflow-x-auto no-scrollbar max-w-full">
+                    <button data-cat="todos" class="cat-pill px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm transition shrink-0">Todos</button>
+                    <button data-cat="frecuentes" class="cat-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0">Frecuentes</button>
+                    <button data-cat="trabajo" class="cat-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0">Trabajo & IA</button>
+                    <button data-cat="ocio" class="cat-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0">Ocio</button>
+                </div>
+
+                <!-- Botones Editar (para borrar en celular) + Nuevo Ícono -->
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button id="edit-links-btn" class="glass-card bg-white/70 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] text-xs font-medium text-slate-600 dark:text-white/75 active:scale-95 flex items-center gap-1 px-3 py-1.5 rounded-full transition" title="Editar o borrar íconos">
+                        <span id="edit-links-label">Editar</span>
+                    </button>
+                    <button id="add-link-btn" class="glass-card bg-white/70 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] text-xs font-semibold accent-text hover:scale-[1.02] active:scale-95 flex items-center gap-1 px-3 sm:px-3.5 py-1.5 rounded-full transition">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        <span>Nuevo</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grilla estilo Dock / iOS Home Screen (4 columnas en celular, 8 en PC) -->
+            <div id="links-grid" class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-2.5 sm:gap-3.5">
+                <!-- Se genera dinámicamente por JS -->
+            </div>
+        </section>
+
+        <!-- WIDGETS BENTO APPLE (Recordatorios, Notas de Apple y Calculadora Primero + Foco Después) -->
+        <section id="widgets-section" class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 transition-all duration-300">
+
+            <!-- 1. RECORDATORIOS (Estilo Apple Reminders) -->
+            <div class="glass-card bg-white/75 dark:bg-[#1C1C1E]/75 border border-white/70 dark:border-white/[0.12] rounded-[28px] p-4 sm:p-5 flex flex-col h-72 sm:h-76">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full accent-bg text-white flex items-center justify-center shadow-sm">
+                            <i data-lucide="list-todo" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <h3 class="text-sm font-semibold tracking-tight">Recordatorios</h3>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="todo-filter-btn" class="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-slate-600 dark:text-white/70 active:scale-95 transition" title="Alternar entre Todos y Pendientes">
+                            Todos
+                        </button>
+                        <span id="todo-count" class="text-xs font-bold accent-text tabular-nums">0</span>
+                        <button id="clear-completed-btn" class="text-[11px] font-medium text-slate-400 dark:text-white/40 hover:text-[#FF453A] active:text-[#FF453A] transition" title="Limpiar completadas">
+                            Limpiar
+                        </button>
                     </div>
                 </div>
-                <button onclick="startGame()" class="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-bold text-lg rounded-xl shadow-lg transition">
-                    ¡Comenzar Partida! <i class="fa-solid fa-play ml-2"></i>
+
+                <!-- Formulario nuevo recordatorio (text-base en móvil para evitar zoom en iOS) -->
+                <form id="todo-form" class="flex gap-2 mb-3">
+                    <input
+                        id="todo-input"
+                        type="text"
+                        enterkeyhint="done"
+                        placeholder="Nuevo recordatorio..."
+                        class="w-full bg-black/[0.04] dark:bg-white/[0.07] border border-transparent accent-border rounded-full px-3.5 py-1.5 text-base sm:text-sm focus:outline-none transition"
+                    >
+                    <button type="submit" class="accent-bg hover:opacity-90 active:scale-95 text-white w-9 h-9 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition shrink-0 shadow-sm" title="Agregar">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                    </button>
+                </form>
+
+                <!-- Lista desplazable con divisores estilo iOS -->
+                <ul id="todo-list" class="flex-1 overflow-y-auto divide-y divide-black/[0.05] dark:divide-white/[0.06] pr-1">
+                    <!-- Tareas dinámicas -->
+                </ul>
+            </div>
+
+            <!-- 2. NOTAS (Estilo Apple Notes) -->
+            <div class="glass-card bg-white/75 dark:bg-[#1C1C1E]/75 border border-white/70 dark:border-white/[0.12] rounded-[28px] p-4 sm:p-5 flex flex-col h-72 sm:h-76">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full bg-[#FFCC00] text-slate-900 flex items-center justify-center shadow-sm">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <h3 class="text-sm font-semibold tracking-tight">Notas</h3>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span id="notes-char-count" class="text-[10px] text-slate-400 dark:text-white/35 tabular-nums">0 car.</span>
+                        <span class="text-slate-300 dark:text-white/20">·</span>
+                        <span id="notes-status" class="text-[11px] text-slate-400 dark:text-white/40 mr-1">iCloud Sync</span>
+                        <button id="copy-notes-btn" class="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 active:scale-90 text-slate-500 dark:text-white/60 transition" title="Copiar nota">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button id="clear-notes-btn" class="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 active:scale-90 text-slate-500 dark:text-white/60 hover:text-[#FF453A] transition" title="Borrar todo">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <textarea
+                    id="notes-area"
+                    placeholder="Escribí una nota rápida... Se sincroniza automáticamente en la nube entre tu PC y tu celular."
+                    class="w-full flex-1 bg-black/[0.03] dark:bg-white/[0.05] border border-transparent focus:border-[#FFCC00]/60 rounded-2xl p-3 text-base sm:text-sm leading-relaxed resize-none focus:outline-none transition"
+                ></textarea>
+            </div>
+
+            <!-- 3. CALCULADORA iOS (PRIMERO) Y FOCO (SEGUNDO) -->
+            <div class="glass-card bg-white/75 dark:bg-[#1C1C1E]/75 border border-white/70 dark:border-white/[0.12] rounded-[28px] p-4 sm:p-5 flex flex-col h-72 sm:h-76">
+                <!-- Segmented Control del Widget: Calculadora Primero, Foco Después -->
+                <div class="flex items-center justify-between mb-2.5">
+                    <div class="flex bg-black/[0.06] dark:bg-white/[0.08] p-0.5 rounded-full text-xs font-medium">
+                        <button id="tab-calc" class="px-3.5 py-1 rounded-full bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm transition">
+                            Calculadora
+                        </button>
+                        <button id="tab-timer" class="px-3.5 py-1 rounded-full text-slate-500 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition">
+                            Foco
+                        </button>
+                    </div>
+                    <i data-lucide="calculator" class="w-4 h-4 text-slate-400 dark:text-white/40"></i>
+                </div>
+
+                <!-- Vista 1 (Activa por defecto): Calculadora estilo iOS (Botones redondos, % y Naranja #FF9F0A) -->
+                <div id="panel-calc" class="flex-1 flex flex-col justify-between">
+                    <div class="relative mb-1.5">
+                        <input
+                            id="calc-display"
+                            type="text"
+                            placeholder="0"
+                            readonly
+                            class="w-full bg-transparent px-2 py-0.5 text-right text-2xl font-light tabular-nums text-slate-900 dark:text-white focus:outline-none select-all"
+                        >
+                    </div>
+                    <div class="grid grid-cols-4 gap-1.5 flex-1 text-xs sm:text-[13px] font-semibold select-none">
+                        <button data-calc="C" class="rounded-full bg-[#D4D4D2] dark:bg-[#A5A5A5] text-black active:scale-95 active:brightness-90 transition">AC</button>
+                        <button data-calc="BACK" class="rounded-full bg-[#D4D4D2] dark:bg-[#A5A5A5] text-black active:scale-95 active:brightness-90 transition" title="Borrar último">⌫</button>
+                        <button data-calc="%" class="rounded-full bg-[#D4D4D2] dark:bg-[#A5A5A5] text-black active:scale-95 active:brightness-90 transition font-bold" title="Porcentaje (ej: 1000+21%)">%</button>
+                        <button data-calc="/" class="rounded-full bg-[#FF9F0A] text-white text-sm active:scale-95 active:brightness-110 transition">÷</button>
+
+                        <button data-calc="7" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">7</button>
+                        <button data-calc="8" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">8</button>
+                        <button data-calc="9" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">9</button>
+                        <button data-calc="*" class="rounded-full bg-[#FF9F0A] text-white text-sm active:scale-95 active:brightness-110 transition">×</button>
+
+                        <button data-calc="4" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">4</button>
+                        <button data-calc="5" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">5</button>
+                        <button data-calc="6" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">6</button>
+                        <button data-calc="-" class="rounded-full bg-[#FF9F0A] text-white text-sm active:scale-95 active:brightness-110 transition">−</button>
+
+                        <button data-calc="1" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">1</button>
+                        <button data-calc="2" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">2</button>
+                        <button data-calc="3" class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">3</button>
+                        <button data-calc="+" class="rounded-full bg-[#FF9F0A] text-white text-sm active:scale-95 active:brightness-110 transition">+</button>
+
+                        <button data-calc="0" class="col-span-2 rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white text-left pl-5 active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">0</button>
+                        <button data-calc="." class="rounded-full bg-black/[0.07] dark:bg-[#333333] text-slate-900 dark:text-white active:scale-95 active:bg-black/15 dark:active:bg-[#555555] transition">.</button>
+                        <button data-calc="=" class="rounded-full bg-[#FF9F0A] text-white text-sm active:scale-95 active:brightness-110 transition">=</button>
+                    </div>
+                </div>
+
+                <!-- Vista 2 (Secundaria): Temporizador de Foco Apple -->
+                <div id="panel-timer" class="hidden flex-1 flex flex-col items-center justify-between py-1">
+                    <div class="flex gap-1.5 text-xs">
+                        <button data-time="1500" class="timer-preset px-3 py-1 rounded-full bg-[#007AFF]/15 text-[#007AFF] dark:text-[#0A84FF] font-medium active:scale-95 transition">25m Foco</button>
+                        <button data-time="300" class="timer-preset px-3 py-1 rounded-full bg-black/[0.05] dark:bg-white/[0.08] text-slate-600 dark:text-white/70 active:scale-95 transition">5m Pausa</button>
+                        <button data-time="900" class="timer-preset px-3 py-1 rounded-full bg-black/[0.05] dark:bg-white/[0.08] text-slate-600 dark:text-white/70 active:scale-95 transition">15m</button>
+                    </div>
+
+                    <div id="timer-display" class="text-5xl font-light tabular-nums tracking-tight text-slate-900 dark:text-white my-1">
+                        25:00
+                    </div>
+
+                    <div class="flex items-center gap-2 w-full">
+                        <button id="timer-start" class="flex-1 bg-[#007AFF] hover:bg-[#007AFF]/90 active:scale-95 text-white py-2.5 rounded-full text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-sm">
+                            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                            <span>Iniciar</span>
+                        </button>
+                        <button id="timer-reset" class="p-2.5 rounded-full bg-black/[0.06] dark:bg-white/[0.1] hover:bg-black/[0.1] dark:hover:bg-white/[0.15] active:scale-95 text-slate-700 dark:text-white text-xs font-medium transition" title="Reiniciar">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- PIE DE PÁGINA MINIMALISTA (Adaptado a Celular y PC) -->
+        <footer class="flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-slate-500 dark:text-white/45 pt-1 pb-2">
+            <div class="hidden sm:flex items-center gap-2">
+                <span>Spotlight: presioná <kbd class="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-slate-700 dark:text-white/80 font-mono text-[11px]">/</kbd></span>
+                <span>·</span>
+                <span>Comandos: <kbd class="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-slate-700 dark:text-white/80 font-mono text-[11px]">!yt</kbd> <kbd class="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-slate-700 dark:text-white/80 font-mono text-[11px]">!w</kbd> <kbd class="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-slate-700 dark:text-white/80 font-mono text-[11px]">!m</kbd></span>
+            </div>
+            <div class="flex items-center justify-center gap-4 w-full sm:w-auto">
+                <button id="install-guide-btn" class="sm:hidden hover:text-[#007AFF] flex items-center gap-1 font-medium text-[#007AFF] dark:text-[#0A84FF]">
+                    <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+                    Usar en Celular
+                </button>
+                <button id="export-data-btn" class="hover:text-[#007AFF] transition flex items-center gap-1" title="Guardar copia de seguridad">
+                    <i data-lucide="share" class="w-3.5 h-3.5"></i>
+                    Exportar
+                </button>
+                <label class="hover:text-[#007AFF] transition flex items-center gap-1 cursor-pointer" title="Cargar copia de seguridad">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    Importar
+                    <input id="import-data-input" type="file" accept=".json" class="hidden">
+                </label>
+                <button id="reset-defaults-btn" class="hover:text-[#FF453A] transition">Restaurar</button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- MODAL ESTILO BOTTOM-SHEET EN MÓVIL / ALERTA CENTRADA EN MACOS -->
+    <div id="custom-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/55 backdrop-blur-md p-0 sm:p-4">
+        <div class="glass-card bg-white/95 dark:bg-[#1C1C1E]/95 border-t sm:border border-white/60 dark:border-white/[0.15] rounded-t-[28px] sm:rounded-[28px] max-w-md w-full p-5 pb-7 sm:pb-5 shadow-2xl max-h-[90dvh] overflow-y-auto">
+            <!-- Indicador de arrastre superior estilo iOS Sheet en móvil -->
+            <div class="w-10 h-1 rounded-full bg-black/15 dark:bg-white/20 mx-auto mb-3 sm:hidden"></div>
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="modal-title" class="text-base font-semibold tracking-tight">Configuración</h3>
+                <button id="modal-close" type="button" class="w-7 h-7 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-white/60 hover:text-slate-800 dark:hover:text-white">
+                    <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
-            <div id="guestWaitingText" class="text-purple-300 text-sm animate-pulse py-3">
-                Esperando a que el anfitrión inicie la partida...
-            </div>
-            <button onclick="leaveRoom()" class="mt-4 text-xs text-red-400 hover:text-red-300 underline">Salir de la sala</button>
-        </div>
-
-        <!-- Vista 3: Sorteo de Letra -->
-        <div id="rouletteView" class="hidden w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl shadow-2xl text-center">
-            <h2 class="text-2xl font-bold mb-2">Ronda <span id="rouletteRoundNum">1</span></h2>
-            <p class="text-purple-200 text-sm mb-6">El anfitrión sorteará la letra de la ronda.</p>
-            
-            <div id="rouletteBox" class="w-32 h-32 mx-auto bg-gradient-to-tr from-yellow-400 to-pink-500 rounded-3xl flex items-center justify-center text-6xl font-extrabold shadow-2xl mb-8 border-4 border-white/30 animate-pulse">
-                ?
-            </div>
-
-            <div id="hostSpinContainer" class="hidden">
-                <button onclick="spinLetter()" class="w-full py-4 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 font-bold text-lg rounded-xl shadow-lg transition">
-                    ¡Sortear Letra! <i class="fa-solid fa-dice ml-2"></i>
-                </button>
-            </div>
-            <div id="guestSpinText" class="text-purple-300 text-sm animate-pulse">
-                Esperando la letra del anfitrión...
-            </div>
-        </div>
-
-        <!-- Vista 4: Partida en Curso (Las 7 Categorías) -->
-        <div id="playView" class="hidden w-full max-w-2xl bg-white/10 backdrop-blur-xl border border-white/20 p-6 sm:p-8 rounded-3xl shadow-2xl">
-            <div class="flex justify-between items-center mb-6 bg-white/5 p-4 rounded-2xl border border-white/10">
-                <div>
-                    <span class="text-xs uppercase tracking-wider text-purple-300 block">Letra actual (Ronda <span id="playRoundNum">1</span>)</span>
-                    <span id="activeLetter" class="text-4xl font-extrabold text-yellow-300">A</span>
+            <form id="modal-form" class="space-y-3">
+                <div id="modal-body" class="space-y-3"></div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" id="modal-cancel" class="px-4 py-2.5 sm:py-2 rounded-full text-xs font-medium bg-black/5 dark:bg-white/10 text-slate-700 dark:text-white/80 hover:opacity-80">
+                        Cerrar
+                    </button>
+                    <button type="submit" id="modal-submit-btn" class="px-5 py-2.5 sm:py-2 rounded-full text-xs font-semibold accent-bg hover:opacity-90 text-white shadow-sm">
+                        Guardar
+                    </button>
                 </div>
-                <div class="text-right">
-                    <span class="text-xs uppercase tracking-wider text-purple-300 block">Tiempo restante</span>
-                    <span id="timerCountdown" class="text-3xl font-extrabold text-pink-400">60</span>
-                </div>
-            </div>
-
-            <div id="categoriesContainer" class="space-y-3 mb-8 max-h-[50vh] overflow-y-auto pr-2">
-                <!-- Inyectado por JS -->
-            </div>
-
-            <button id="altoElFuegoBtn" onclick="submitAltoElFuego()" class="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-bold text-lg rounded-xl shadow-lg transition transform hover:-translate-y-0.5">
-                ¡ALTO EL FUEGO! <i class="fa-solid fa-hand-paper ml-2"></i>
-            </button>
-        </div>
-
-        <!-- Vista 5: Puntajes y Podio Final -->
-        <div id="scoresView" class="hidden w-full max-w-xl bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl shadow-2xl text-center">
-            <div class="inline-block p-4 rounded-full bg-gradient-to-tr from-yellow-400 to-amber-600 mb-4 shadow-xl">
-                <i class="fa-solid fa-trophy text-4xl text-white"></i>
-            </div>
-            <h2 id="scoresTitle" class="text-3xl font-extrabold mb-2">Puntajes de la Ronda</h2>
-            <p id="scoresSubtitle" class="text-purple-200 mb-6 text-sm">Respuestas enviadas y puntos acumulados.</p>
-
-            <div id="scoresListContainer" class="bg-black/30 rounded-2xl p-4 mb-8 border border-white/10 space-y-4 max-h-72 overflow-y-auto text-left">
-                <!-- Dinámico -->
-            </div>
-
-            <div id="hostNextContainer" class="hidden space-y-3">
-                <button id="nextRoundBtn" onclick="nextRound()" class="w-full py-4 bg-gradient-to-r from-pink-500 to-yellow-500 hover:from-pink-600 hover:to-yellow-600 font-bold text-lg rounded-xl shadow-lg transition">
-                    Siguiente Ronda <i class="fa-solid fa-arrow-right ml-2"></i>
-                </button>
-            </div>
-            <div id="guestNextText" class="text-purple-300 text-sm animate-pulse">
-                Esperando a que el anfitrión continúe...
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Modal Configuración Firebase -->
-    <div id="configModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-slate-900 border border-white/20 p-6 rounded-3xl max-w-md w-full text-left shadow-2xl">
-            <h3 class="text-xl font-bold mb-2 text-yellow-300"><i class="fa-solid fa-fire mr-2 text-orange-500"></i>Configuración Firebase</h3>
-            <p class="text-xs text-purple-200 mb-4">Ingresa tu objeto de configuración de Firebase en formato JSON.</p>
-            
-            <div class="space-y-3 mb-6">
-                <div>
-                    <label class="block text-xs text-purple-300 mb-1">Firebase Config (JSON)</label>
-                    <textarea id="firebaseConfigInput" rows="6" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "...", "storageBucket": "...", "messagingSenderId": "...", "appId": "..."}'
-                        class="w-full bg-black/40 border border-white/20 rounded-xl p-3 text-xs text-white font-mono focus:outline-none focus:ring-2 focus:ring-yellow-400"></textarea>
-                </div>
-            </div>
-
-            <div class="flex space-x-3">
-                <button onclick="closeConfigModal()" class="w-1/2 py-3 bg-gray-800 hover:bg-gray-700 text-sm font-bold rounded-xl">Cancelar</button>
-                <button onclick="saveFirebaseConfig()" class="w-1/2 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 text-sm font-bold rounded-xl">Guardar y Conectar</button>
-            </div>
+            </form>
         </div>
     </div>
 
-    <!-- Modal Unirse a Sala -->
-    <div id="joinModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-slate-900 border border-white/20 p-6 rounded-3xl max-w-sm w-full text-center shadow-2xl">
-            <h3 class="text-xl font-bold mb-4 text-yellow-300">Unirse a Sala</h3>
-            <div class="mb-6">
-                <input type="text" id="joinCodeInput" maxlength="4" placeholder="CÓDIGO (Ej. AB12)" 
-                    class="w-full bg-black/40 border border-white/25 rounded-xl px-4 py-3 text-center text-white placeholder-purple-300/50 uppercase tracking-widest font-extrabold text-xl focus:outline-none focus:ring-2 focus:ring-yellow-400">
-            </div>
-            <div class="flex space-x-3">
-                <button onclick="closeJoinModal()" class="w-1/2 py-3 bg-gray-800 hover:bg-gray-700 font-bold rounded-xl">Cancelar</button>
-                <button onclick="confirmJoinRoom()" class="w-1/2 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 font-bold rounded-xl">Unirse</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Custom Notification Modal -->
-    <div id="customModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-slate-900 border border-white/20 p-6 rounded-3xl max-w-sm w-full text-center shadow-2xl">
-            <div id="modalIcon" class="text-4xl text-yellow-400 mb-3"><i class="fa-solid fa-circle-exclamation"></i></div>
-            <h3 id="modalTitle" class="text-xl font-bold mb-2">Aviso</h3>
-            <p id="modalMessage" class="text-gray-300 text-sm mb-6">Mensaje...</p>
-            <button onclick="closeModal()" class="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 font-bold rounded-xl shadow">Entendido</button>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="w-full py-4 text-center text-xs text-purple-300 border-t border-white/10 bg-black/20">
-        Tutti Frutti Online &bull; Firebase Firestore Edition
-    </footer>
-
-    <!-- Firebase SDK Imports & Game Logic -->
+    <!-- LÓGICA DE LA APLICACIÓN + FIREBASE FIRESTORE CLOUD SYNC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const CATEGORIES = [
-            "Cosas",
-            "Nombre",
-            "Color",
-            "Fruta o Verdura",
-            "País y Provincia",
-            "Animal",
-            "Marca"
+        // ==========================================
+        // MANIFEST PWA DINÁMICO (Para instalar en iOS y Android)
+        // ==========================================
+        (function setupPWAManifest() {
+            const manifest = {
+                name: "Mi Inicio Personal",
+                short_name: "Mi Inicio",
+                description: "Página de inicio estilo Apple sincronizada en la nube",
+                start_url: window.location.href,
+                display: "standalone",
+                background_color: "#000000",
+                theme_color: "#090d16",
+                icons: [
+                    {
+                        src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23007AFF'/%3E%3Ccircle cx='90' cy='90' r='44' fill='none' stroke='white' stroke-width='10'/%3E%3Cpath d='M90 64v28l18 12' fill='none' stroke='white' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E",
+                        sizes: "180x180",
+                        type: "image/svg+xml",
+                        purpose: "any maskable"
+                    }
+                ]
+            };
+            const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+            const manifestLink = document.getElementById('pwa-manifest');
+            if (manifestLink) manifestLink.href = URL.createObjectURL(blob);
+        })();
+
+        // ==========================================
+        // ESTADO PREDETERMINADO Y PRESETS APPLE
+        // ==========================================
+        const DEFAULT_LINKS = [
+            { id: '1', title: 'YouTube', url: 'https://www.youtube.com', category: 'ocio' },
+            { id: '2', title: 'WhatsApp', url: 'https://web.whatsapp.com', category: 'frecuentes' },
+            { id: '3', title: 'Gmail', url: 'https://mail.google.com', category: 'frecuentes' },
+            { id: '4', title: 'Google Drive', url: 'https://drive.google.com', category: 'trabajo' },
+            { id: '5', title: 'ChatGPT', url: 'https://chatgpt.com', category: 'trabajo' },
+            { id: '6', title: 'Mercado Libre', url: 'https://www.mercadolibre.com.ar', category: 'frecuentes' },
+            { id: '7', title: 'GitHub', url: 'https://github.com', category: 'trabajo' },
+            { id: '8', title: 'Maps', url: 'https://maps.google.com', category: 'frecuentes' }
         ];
 
-        const ALPHABET = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V"];
+        const DEFAULT_TODOS = [
+            { id: 't1', text: 'Probar cálculo con % en Calculadora o Spotlight (ej: 1000+21%)', done: false },
+            { id: 't2', text: 'Abrir "Nube activa" arriba para vincular PC y celular', done: false }
+        ];
 
-        let app, db, auth;
+        const ACCENT_COLORS = [
+            { id: 'blue', name: 'Azul Apple', hex: '#007AFF' },
+            { id: 'purple', name: 'Púrpura iOS', hex: '#BF5AF2' },
+            { id: 'green', name: 'Verde Menta', hex: '#30D158' },
+            { id: 'orange', name: 'Naranja Solar', hex: '#FF9F0A' },
+            { id: 'pink', name: 'Rosa Flamingo', hex: '#FF375F' },
+            { id: 'indigo', name: 'Índigo Pro', hex: '#5E5CE6' }
+        ];
+
+        const WALLPAPER_PRESETS = [
+            { id: 'default', name: 'macOS Dynamic', type: 'default', preview: 'linear-gradient(135deg, #007AFF 0%, #5856D6 50%, #1C1C1E 100%)' },
+            { id: 'sequoia', name: 'macOS Sequoia', type: 'gradient', value: 'radial-gradient(circle at 20% 20%, rgba(10, 132, 255, 0.55), transparent 50%), radial-gradient(circle at 80% 35%, rgba(255, 159, 10, 0.45), transparent 50%), radial-gradient(circle at 50% 85%, rgba(94, 92, 230, 0.55), transparent 55%), linear-gradient(160deg, #050816 0%, #121629 100%)', preview: 'linear-gradient(135deg, #0A84FF 0%, #FF9F0A 50%, #5E5CE6 100%)' },
+            { id: 'ios18', name: 'iOS 18 Aura', type: 'gradient', value: 'radial-gradient(circle at 75% 20%, rgba(255, 55, 95, 0.5), transparent 45%), radial-gradient(circle at 25% 75%, rgba(48, 209, 88, 0.35), transparent 50%), linear-gradient(135deg, #000000 0%, #1c1c1e 60%, #2c1638 100%)', preview: 'linear-gradient(135deg, #FF375F 0%, #5E5CE6 55%, #30D158 100%)' },
+            { id: 'yosemite', name: 'Yosemite', type: 'image', value: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80', preview: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=300&q=60' },
+            { id: 'bigsur', name: 'Big Sur', type: 'image', value: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80', preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=60' },
+            { id: 'mojave', name: 'Mojave Night', type: 'image', value: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1920&q=80', preview: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=300&q=60' },
+            { id: 'neoncity', name: 'Ciudad Neón', type: 'image', value: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1920&q=80', preview: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=300&q=60' },
+            { id: 'minimaldark', name: 'Minimal Dark', type: 'gradient', value: 'linear-gradient(145deg, #090A0F 0%, #161824 50%, #090A0F 100%)', preview: 'linear-gradient(135deg, #161824 0%, #090A0F 100%)' }
+        ];
+
+        // Leer código de sincronización desde URL (?sync=...) o usar el código compartido por defecto
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialSyncKey = (urlParams.get('sync') || 'mi-inicio-apple').trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-');
+
+        const state = {
+            syncKey: initialSyncKey || 'mi-inicio-apple',
+            userName: 'Usuario',
+            theme: 'dark',
+            accentColor: '#007AFF',
+            city: 'Buenos Aires',
+            use24h: true,
+            zenMode: false,
+            editLinksMode: false,
+            wallpaper: { type: 'default', value: '', dim: 50, blur: true },
+            activeCategory: 'todos',
+            todoFilter: 'all', // 'all' | 'pending'
+            links: [...DEFAULT_LINKS],
+            todos: [...DEFAULT_TODOS],
+            notes: '',
+            dolarData: [],
+            lastSyncedAt: null
+        };
+
+        // ==========================================
+        // CONFIGURACIÓN DE FIREBASE FIRESTORE (REGLAS 1, 2 y 3)
+        // ==========================================
+        // Si alojás este archivo por tu cuenta fuera de este entorno, podés pegar tu firebaseConfig aquí:
+        const CUSTOM_FIREBASE_CONFIG = null;
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        let db = null;
+        let auth = null;
         let currentUser = null;
-        let currentRoomId = null;
-        let roomUnsubscribe = null;
-        let timerInterval = null;
-        let stopFallbackTimeout = null;
+        let unsubscribeWorkspace = null;
+        let saveDebounceTimer = null;
+        let isApplyingRemoteUpdate = false;
+        const clientInstanceId = crypto.randomUUID();
 
-        // Control de estado local por ronda para no perder nunca lo escrito
-        let activePlayRound = 0;
-        let localSubmittedRound = 0;
-        let isSubmittingNow = false;
-        let myDraftAnswers = {};
-        let latestRoomData = null;
+        function updateCloudIndicator(status, customLabel) {
+            const dot = document.getElementById('cloud-status-dot');
+            const text = document.getElementById('cloud-status-text');
+            if (!dot || !text) return;
 
-        let customFirebaseConfig = localStorage.getItem('tf_firebase_config');
-
-        // Normaliza texto: quita tildes (LIMÓN -> LIMON), espacios extra (LA RIOJA -> LARIOJA) y pasa a mayúsculas
-        function normalizeWord(str) {
-            if (!str) return '';
-            return str
-                .toString()
-                .trim()
-                .toUpperCase()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .replace(/[^A-ZÑ0-9]/g, "");
+            if (status === 'synced') {
+                dot.className = 'w-2 h-2 rounded-full bg-[#30D158]';
+                text.textContent = customLabel || 'Nube activa';
+            } else if (status === 'syncing') {
+                dot.className = 'w-2 h-2 rounded-full bg-[#007AFF] animate-ping';
+                text.textContent = customLabel || 'Sincronizando...';
+            } else if (status === 'error' || status === 'offline') {
+                dot.className = 'w-2 h-2 rounded-full bg-[#FF9F0A]';
+                text.textContent = customLabel || 'Modo Local';
+            }
         }
 
-        window.updateDraft = function(index, val) {
-            const cat = CATEGORIES[index];
-            if (cat) {
-                myDraftAnswers[cat] = val.trim().toUpperCase();
-            }
-        };
+        // Referencia estricta (RULE 1): /artifacts/{appId}/public/data/startpage_workspaces/{syncKey}
+        function getWorkspaceDocRef(syncKey) {
+            const cleanKey = (syncKey || 'mi-inicio-apple').trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-') || 'mi-inicio-apple';
+            return doc(db, 'artifacts', appId, 'public', 'data', 'startpage_workspaces', cleanKey);
+        }
 
-        window.onload = async function() {
-            if (customFirebaseConfig) {
+        // Referencia privada del usuario para recordar su syncKey elegido
+        function getUserPreferencesDocRef() {
+            return doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'preferences');
+        }
+
+        // Guardar estado completo en Firestore
+        async function pushStateToCloud(immediate = false) {
+            if (!db || !currentUser) {
+                updateCloudIndicator('offline', 'Modo Local');
+                return;
+            }
+
+            if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+
+            const performWrite = async () => {
+                if (!currentUser) return;
+                updateCloudIndicator('syncing', 'Sincronizando...');
                 try {
-                    document.getElementById('firebaseConfigInput').value = customFirebaseConfig;
-                    initFirebase(JSON.parse(customFirebaseConfig));
-                } catch(e) {
-                    openConfigModal();
+                    const docRef = getWorkspaceDocRef(state.syncKey);
+                    const payload = {
+                        userName: state.userName,
+                        theme: state.theme,
+                        accentColor: state.accentColor,
+                        city: state.city,
+                        use24h: state.use24h,
+                        zenMode: state.zenMode,
+                        wallpaper: state.wallpaper,
+                        links: state.links,
+                        todos: state.todos,
+                        notes: state.notes,
+                        updatedAt: Date.now(),
+                        updatedBy: currentUser.uid,
+                        clientInstanceId
+                    };
+                    await setDoc(docRef, payload, { merge: true });
+                    state.lastSyncedAt = new Date();
+                    updateCloudIndicator('synced', 'Nube activa');
+                    const notesStatus = document.getElementById('notes-status');
+                    if (notesStatus) notesStatus.textContent = 'Sincronizado';
+                } catch (err) {
+                    console.error('Error guardando en Firestore:', err);
+                    updateCloudIndicator('error', 'Error nube');
                 }
+            };
+
+            if (immediate) {
+                await performWrite();
             } else {
-                openConfigModal();
+                saveDebounceTimer = setTimeout(performWrite, 400);
+            }
+        }
+
+        // Aplicar datos recibidos desde Firestore a la interfaz
+        function applyRemoteDataToUI(data) {
+            if (!data) return;
+            isApplyingRemoteUpdate = true;
+
+            const prevCity = state.city;
+            if (typeof data.userName === 'string') state.userName = data.userName;
+            if (typeof data.theme === 'string') state.theme = data.theme;
+            if (typeof data.accentColor === 'string') state.accentColor = data.accentColor;
+            if (typeof data.city === 'string') state.city = data.city;
+            if (typeof data.use24h === 'boolean') state.use24h = data.use24h;
+            if (typeof data.zenMode === 'boolean') state.zenMode = data.zenMode;
+            if (data.wallpaper && typeof data.wallpaper === 'object') state.wallpaper = data.wallpaper;
+            if (Array.isArray(data.links)) state.links = data.links;
+            if (Array.isArray(data.todos)) state.todos = data.todos;
+
+            const notesArea = document.getElementById('notes-area');
+            if (typeof data.notes === 'string') {
+                state.notes = data.notes;
+                if (document.activeElement !== notesArea || data.clientInstanceId !== clientInstanceId) {
+                    notesArea.value = state.notes;
+                    updateNotesCounter();
+                }
             }
 
-            const savedNick = localStorage.getItem('tf_nickname');
-            if (savedNick) {
-                document.getElementById('nicknameInput').value = savedNick;
-            }
-        };
+            document.getElementById('user-name-display').textContent = state.userName;
+            applyTheme();
+            applyAccentColor();
+            applyWallpaper();
+            applyZenMode();
+            updateClock();
+            renderLinks();
+            renderTodos();
 
-        function initFirebase(config) {
+            if (state.city !== prevCity) {
+                fetchWeather(state.city);
+            }
+
+            state.lastSyncedAt = data.updatedAt ? new Date(data.updatedAt) : new Date();
+            updateCloudIndicator('synced', 'Nube activa');
+            isApplyingRemoteUpdate = false;
+        }
+
+        // Suscribirse en tiempo real al documento del Código de Sincronización activo
+        async function subscribeToWorkspace(syncKey) {
+            if (!db || !currentUser) return;
+            if (unsubscribeWorkspace) {
+                unsubscribeWorkspace();
+                unsubscribeWorkspace = null;
+            }
+
+            const cleanKey = (syncKey || 'mi-inicio-apple').trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-') || 'mi-inicio-apple';
+            state.syncKey = cleanKey;
+
+            updateCloudIndicator('syncing', 'Conectando...');
+            const docRef = getWorkspaceDocRef(cleanKey);
+
             try {
-                app = initializeApp(config);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                signInAnonymously(auth).then(() => {
-                    currentUser = auth.currentUser;
-                    document.getElementById('headerStatus').innerText = `Conectado (${currentUser.uid.substring(0, 5)}...)`;
-                }).catch(err => {
-                    console.error("Auth error:", err);
-                });
+                await setDoc(getUserPreferencesDocRef(), { activeSyncKey: cleanKey, updatedAt: Date.now() }, { merge: true });
             } catch (e) {
-                console.error("Firebase init error:", e);
-                showModal("Error de Configuración", "Credenciales de Firebase inválidas. Revisa el JSON.");
-            }
-        }
-
-        window.openConfigModal = function() {
-            document.getElementById('configModal').classList.remove('hidden');
-            document.getElementById('configModal').classList.add('flex');
-        };
-
-        window.closeConfigModal = function() {
-            document.getElementById('configModal').classList.remove('flex');
-            document.getElementById('configModal').classList.add('hidden');
-        };
-
-        window.saveFirebaseConfig = function() {
-            const val = document.getElementById('firebaseConfigInput').value.trim();
-            try {
-                const parsed = JSON.parse(val);
-                localStorage.setItem('tf_firebase_config', val);
-                initFirebase(parsed);
-                closeConfigModal();
-                showModal("¡Conectado!", "Configuración de Firebase guardada correctamente.");
-            } catch(e) {
-                showModal("Formato Inválido", "El texto ingresado no es un JSON válido.");
-            }
-        };
-
-        window.saveNickname = function() {
-            const nick = document.getElementById('nicknameInput').value.trim();
-            if (!nick) {
-                showModal("Atención", "Por favor ingresa un apodo.");
-                return;
-            }
-            localStorage.setItem('tf_nickname', nick);
-            document.getElementById('welcomeNickname').innerText = nick;
-            switchView('menuView');
-        };
-
-        window.logoutUser = function() {
-            localStorage.removeItem('tf_nickname');
-            switchView('loginView');
-        };
-
-        function switchView(viewId) {
-            ['loginView', 'menuView', 'lobbyView', 'rouletteView', 'playView', 'scoresView'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-            });
-            document.getElementById(viewId).classList.remove('hidden');
-        }
-
-        window.showModal = function(title, message) {
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalMessage').innerText = message;
-            document.getElementById('customModal').classList.remove('hidden');
-            document.getElementById('customModal').classList.add('flex');
-        };
-
-        window.closeModal = function() {
-            document.getElementById('customModal').classList.remove('flex');
-            document.getElementById('customModal').classList.add('hidden');
-        };
-
-        window.createRoom = async function() {
-            if (!currentUser || !db) {
-                showModal("Sin Conexión", "Configura Firebase primero antes de crear una sala.");
-                openConfigModal();
-                return;
+                // Continuar aunque falle el guardado de preferencia privada
             }
 
-            const nick = localStorage.getItem('tf_nickname');
-            const roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
-
-            const roomData = {
-                roomCode: roomCode,
-                hostUid: currentUser.uid,
-                status: 'lobby',
-                rounds: 5,
-                timePerRound: 60,
-                currentRound: 1,
-                activeLetter: '',
-                roundLetters: {},
-                players: {
-                    [currentUser.uid]: {
-                        uid: currentUser.uid,
-                        nickname: nick,
-                        answers: {},
-                        roundAnswers: {},
-                        submittedRound: 0
+            unsubscribeWorkspace = onSnapshot(
+                docRef,
+                async (snapshot) => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.data();
+                        applyRemoteDataToUI(data);
+                    } else {
+                        await pushStateToCloud(true);
                     }
                 },
-                createdAt: Date.now()
-            };
+                (error) => {
+                    console.error('Error en suscripción de Firestore:', error);
+                    updateCloudIndicator('error', 'Modo Local');
+                }
+            );
+        }
 
+        async function initFirebaseCloud() {
             try {
-                const roomRef = doc(db, 'rooms', roomCode);
-                await setDoc(roomRef, roomData);
-                currentRoomId = roomCode;
-                activePlayRound = 0;
-                localSubmittedRound = 0;
-                enterLobby(roomCode);
-            } catch (e) {
-                console.error(e);
-                showModal("Error", "No se pudo crear la sala en Firestore.");
-            }
-        };
+                let firebaseConfig = CUSTOM_FIREBASE_CONFIG;
+                if (!firebaseConfig && typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    firebaseConfig = JSON.parse(__firebase_config);
+                }
 
-        window.promptJoinRoom = function() {
-            document.getElementById('joinModal').classList.remove('hidden');
-            document.getElementById('joinModal').classList.add('flex');
-        };
-
-        window.closeJoinModal = function() {
-            document.getElementById('joinModal').classList.remove('flex');
-            document.getElementById('joinModal').classList.add('hidden');
-        };
-
-        window.confirmJoinRoom = async function() {
-            const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
-            if (code.length < 4) {
-                showModal("Atención", "Ingresa un código válido de 4 caracteres.");
-                return;
-            }
-            if (!currentUser || !db) {
-                showModal("Sin Conexión", "Configura Firebase primero.");
-                openConfigModal();
-                return;
-            }
-
-            try {
-                const roomRef = doc(db, 'rooms', code);
-                const snap = await getDoc(roomRef);
-                if (!snap.exists()) {
-                    showModal("Error", "La sala no existe.");
+                if (!firebaseConfig) {
+                    updateCloudIndicator('offline', 'Modo Local');
                     return;
                 }
 
-                const data = snap.data();
-                const playersCount = Object.keys(data.players || {}).length;
-                if (!data.players[currentUser.uid] && playersCount >= 4) {
-                    showModal("Sala Llena", "Esta sala ya cuenta con 4 jugadores.");
-                    return;
-                }
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
 
-                closeJoinModal();
-                const nick = localStorage.getItem('tf_nickname');
-
-                if (!data.players[currentUser.uid]) {
-                    await updateDoc(roomRef, {
-                        [`players.${currentUser.uid}`]: {
-                            uid: currentUser.uid,
-                            nickname: nick,
-                            answers: {},
-                            roundAnswers: {},
-                            submittedRound: 0
-                        }
-                    });
-                }
-
-                currentRoomId = code;
-                activePlayRound = 0;
-                localSubmittedRound = 0;
-                enterLobby(code);
-            } catch (e) {
-                console.error(e);
-                showModal("Error", "No se pudo conectar a la sala.");
-            }
-        };
-
-        function enterLobby(roomCode) {
-            document.getElementById('displayRoomCode').innerText = roomCode;
-            document.getElementById('lobbyRoomCode').innerText = roomCode;
-            document.getElementById('roomBadge').classList.remove('hidden');
-            switchView('lobbyView');
-            listenRoom(roomCode);
-        }
-
-        function listenRoom(roomCode) {
-            if (roomUnsubscribe) roomUnsubscribe();
-            const roomRef = doc(db, 'rooms', roomCode);
-
-            roomUnsubscribe = onSnapshot(roomRef, (docSnap) => {
-                if (!docSnap.exists()) return;
-                const room = docSnap.data();
-                latestRoomData = room;
-                updateLobbyUI(room);
-                handleGameState(room);
-            }, (error) => {
-                console.error("Snapshot error:", error);
-            });
-        }
-
-        function updateLobbyUI(room) {
-            const players = room.players || {};
-            const pUids = Object.keys(players);
-            document.getElementById('playerCount').innerText = pUids.length;
-
-            const list = document.getElementById('playersListContainer');
-            list.innerHTML = '';
-            pUids.forEach(uid => {
-                const p = players[uid];
-                const isHost = uid === room.hostUid;
-                list.innerHTML += `
-                    <div class="flex justify-between items-center bg-white/5 px-4 py-2.5 rounded-xl border border-white/10">
-                        <span class="font-bold text-white"><i class="fa-solid fa-user text-purple-400 mr-2"></i>${p.nickname} ${uid === currentUser.uid ? '(Tú)' : ''}</span>
-                        ${isHost ? '<span class="text-xs bg-yellow-500/20 text-yellow-300 px-2.5 py-1 rounded-lg border border-yellow-500/30">Anfitrión</span>' : '<span class="text-xs text-purple-300">Jugador</span>'}
-                    </div>
-                `;
-            });
-
-            const isHost = room.hostUid === currentUser.uid;
-            if (isHost && room.status === 'lobby') {
-                document.getElementById('hostControls').classList.remove('hidden');
-                document.getElementById('guestWaitingText').classList.add('hidden');
-            } else if (!isHost && room.status === 'lobby') {
-                document.getElementById('hostControls').classList.add('hidden');
-                document.getElementById('guestWaitingText').classList.remove('hidden');
-            }
-        }
-
-        async function handleGameState(room) {
-            const status = room.status;
-            const isHost = room.hostUid === currentUser.uid;
-            const roundNum = room.currentRound || 1;
-
-            if (status === 'lobby') {
-                activePlayRound = 0;
-                localSubmittedRound = 0;
-                switchView('lobbyView');
-            } else if (status === 'roulette') {
-                if (timerInterval) clearInterval(timerInterval);
-                switchView('rouletteView');
-                document.getElementById('rouletteRoundNum').innerText = roundNum;
-                document.getElementById('rouletteBox').innerText = room.activeLetter || '?';
-
-                if (isHost && !room.activeLetter) {
-                    document.getElementById('hostSpinContainer').classList.remove('hidden');
-                    document.getElementById('guestSpinText').classList.add('hidden');
+                // RULE 3: Autenticar PRIMERO antes de realizar cualquier operación en Firestore
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
-                    document.getElementById('hostSpinContainer').classList.add('hidden');
-                    document.getElementById('guestSpinText').classList.remove('hidden');
-                }
-            } else if (status === 'playing') {
-                if (activePlayRound !== roundNum) {
-                    activePlayRound = roundNum;
-                    startPlayPhase(room);
-                }
-            } else if (status === 'stopping') {
-                // Alguien tocó Alto el Fuego: cada jugador envía automáticamente lo que tenga escrito
-                if (timerInterval) clearInterval(timerInterval);
-                const myPlayer = room.players && room.players[currentUser.uid];
-                const alreadyInDb = myPlayer && myPlayer.submittedRound === roundNum;
-
-                if (!alreadyInDb && localSubmittedRound !== roundNum && !isSubmittingNow) {
-                    await pushMyAnswersToFirestore(roundNum, false);
+                    await signInAnonymously(auth);
                 }
 
-                // Verificar si todos los jugadores ya subieron sus respuestas de esta ronda
-                const playersList = Object.values(room.players || {});
-                const allSubmitted = playersList.every(p => p.submittedRound === roundNum);
+                onAuthStateChanged(auth, async (user) => {
+                    currentUser = user;
+                    if (!currentUser) return;
 
-                if (allSubmitted && isHost) {
-                    if (stopFallbackTimeout) clearTimeout(stopFallbackTimeout);
-                    const roomRef = doc(db, 'rooms', currentRoomId);
-                    await updateDoc(roomRef, { status: 'scores' });
-                } else if (isHost && !stopFallbackTimeout) {
-                    // Por seguridad: si alguien tiene internet lento, esperar máximo 1.5s y mostrar puntajes
-                    stopFallbackTimeout = setTimeout(async () => {
-                        stopFallbackTimeout = null;
-                        if (latestRoomData && latestRoomData.status === 'stopping') {
-                            const roomRef = doc(db, 'rooms', currentRoomId);
-                            await updateDoc(roomRef, { status: 'scores' });
+                    if (!urlParams.get('sync')) {
+                        try {
+                            const prefSnap = await getDoc(getUserPreferencesDocRef());
+                            if (prefSnap.exists() && prefSnap.data().activeSyncKey) {
+                                state.syncKey = prefSnap.data().activeSyncKey;
+                            }
+                        } catch (e) {
+                            // Usar state.syncKey por defecto
                         }
-                    }, 1500);
-                }
-            } else if (status === 'scores') {
-                if (timerInterval) clearInterval(timerInterval);
-                if (stopFallbackTimeout) {
-                    clearTimeout(stopFallbackTimeout);
-                    stopFallbackTimeout = null;
-                }
-                // Si por lag este dispositivo aún no había subido sus respuestas, las sube igual sin pisar a nadie
-                const myPlayer = room.players && room.players[currentUser.uid];
-                const alreadyInDb = myPlayer && myPlayer.submittedRound === roundNum;
-                if (!alreadyInDb && localSubmittedRound !== roundNum && !isSubmittingNow) {
-                    await pushMyAnswersToFirestore(roundNum, false);
-                }
-                showScoresScreen(room);
+                    }
+
+                    await subscribeToWorkspace(state.syncKey);
+                });
+            } catch (err) {
+                console.error('Error iniciando Firebase:', err);
+                updateCloudIndicator('offline', 'Modo Local');
             }
         }
 
-        window.startGame = async function() {
-            if (!currentRoomId) return;
-            const rounds = parseInt(document.getElementById('lobbyRounds').value);
-            const time = parseInt(document.getElementById('lobbyTime').value);
+        function saveState(key, value, immediate = true) {
+            state[key] = value;
+            if (!isApplyingRemoteUpdate) {
+                pushStateToCloud(immediate);
+            }
+        }
 
-            const roomRef = doc(db, 'rooms', currentRoomId);
-            const snap = await getDoc(roomRef);
-            if (!snap.exists()) return;
-            const room = snap.data();
+        // ==========================================
+        // TEMA CLARO / OSCURO, ACENTO, FONDO Y MODO ZEN
+        // ==========================================
+        function applyAccentColor() {
+            const hex = state.accentColor || '#007AFF';
+            document.documentElement.style.setProperty('--apple-accent', hex);
+        }
 
-            const players = room.players || {};
-            Object.keys(players).forEach(uid => {
-                players[uid].answers = {};
-                players[uid].roundAnswers = {};
-                players[uid].submittedRound = 0;
-            });
+        function applyWallpaper() {
+            const layer = document.getElementById('wallpaper-layer');
+            const overlay = document.getElementById('wallpaper-overlay');
+            const orbs = document.getElementById('default-orbs');
+            const wp = state.wallpaper || { type: 'default', value: '', dim: 50, blur: true };
 
-            activePlayRound = 0;
-            localSubmittedRound = 0;
-            myDraftAnswers = {};
+            if (!wp.type || wp.type === 'default') {
+                layer.classList.add('hidden');
+                overlay.classList.add('hidden');
+                orbs.classList.remove('hidden');
+                layer.style.backgroundImage = '';
+                return;
+            }
 
-            await updateDoc(roomRef, {
-                rounds: rounds,
-                timePerRound: time,
-                currentRound: 1,
-                status: 'roulette',
-                activeLetter: '',
-                roundLetters: {},
-                players: players
-            });
+            orbs.classList.add('hidden');
+            layer.classList.remove('hidden');
+            overlay.classList.remove('hidden');
+
+            if (wp.type === 'gradient') {
+                layer.style.backgroundImage = wp.value;
+            } else if (wp.type === 'image') {
+                layer.style.backgroundImage = `url('${wp.value}')`;
+            }
+
+            const dimOpacity = (wp.dim !== undefined ? wp.dim : 50) / 100;
+            overlay.style.backgroundColor = `rgba(2, 6, 23, ${dimOpacity})`;
+            overlay.style.backdropFilter = wp.blur ? 'blur(3px)' : 'none';
+        }
+
+        function applyTheme() {
+            const html = document.documentElement;
+            const metaTheme = document.getElementById('meta-theme-color');
+            if (state.theme === 'dark') {
+                html.classList.add('dark');
+                if (metaTheme) metaTheme.setAttribute('content', '#000000');
+            } else {
+                html.classList.remove('dark');
+                if (metaTheme) metaTheme.setAttribute('content', '#F2F2F7');
+            }
+        }
+
+        function applyZenMode() {
+            const widgets = document.getElementById('widgets-section');
+            const zenBtn = document.getElementById('zen-toggle');
+            const zenBtnMobile = document.getElementById('zen-toggle-mobile');
+            const iconHtml = state.zenMode
+                ? '<i data-lucide="eye-off" class="w-4 h-4 sm:w-3.5 sm:h-3.5 accent-text"></i>'
+                : '<i data-lucide="eye" class="w-4 h-4 sm:w-3.5 sm:h-3.5"></i>';
+
+            if (state.zenMode) {
+                widgets.classList.add('hidden');
+            } else {
+                widgets.classList.remove('hidden');
+            }
+            if (zenBtn) zenBtn.innerHTML = iconHtml;
+            if (zenBtnMobile) zenBtnMobile.innerHTML = iconHtml;
+            lucide.createIcons();
+        }
+
+        function toggleThemeHandler() {
+            const nextTheme = state.theme === 'dark' ? 'light' : 'dark';
+            saveState('theme', nextTheme);
+            applyTheme();
+        }
+
+        function toggleZenHandler() {
+            saveState('zenMode', !state.zenMode);
+            applyZenMode();
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', toggleThemeHandler);
+        document.getElementById('theme-toggle-mobile').addEventListener('click', toggleThemeHandler);
+        document.getElementById('zen-toggle').addEventListener('click', toggleZenHandler);
+        document.getElementById('zen-toggle-mobile').addEventListener('click', toggleZenHandler);
+
+        // ==========================================
+        // RELOJ (12H / 24H), FECHA Y SALUDO DINÁMICO
+        // ==========================================
+        function updateClock() {
+            const now = new Date();
+            let hoursNum = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampmEl = document.getElementById('clock-ampm');
+
+            if (!state.use24h) {
+                const ampm = hoursNum >= 12 ? 'PM' : 'AM';
+                hoursNum = hoursNum % 12 || 12;
+                ampmEl.textContent = ampm;
+                ampmEl.classList.remove('hidden');
+            } else {
+                ampmEl.classList.add('hidden');
+            }
+
+            const hours = String(hoursNum).padStart(2, '0');
+            document.getElementById('clock-time').textContent = `${hours}:${minutes}`;
+            document.getElementById('clock-seconds').textContent = seconds;
+
+            const hr = now.getHours();
+            let greeting = 'Buenas noches';
+            if (hr >= 5 && hr < 12) greeting = 'Buenos días';
+            else if (hr >= 12 && hr < 20) greeting = 'Buenas tardes';
+            document.getElementById('greeting-text').textContent = `${greeting},`;
+
+            const dateOptions = { weekday: 'long', day: 'numeric', month: 'long' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('es-AR', dateOptions);
+        }
+
+        document.getElementById('clock-container').addEventListener('click', () => {
+            saveState('use24h', !state.use24h);
+            updateClock();
+        });
+
+        // ==========================================
+        // BUSCADOR INTELIGENTE + BANGS + CÁLCULO EN VIVO CON %
+        // ==========================================
+        const SEARCH_ENGINES = {
+            google: 'https://www.google.com/search?q=',
+            youtube: 'https://www.youtube.com/results?search_query=',
+            duckduckgo: 'https://duckduckgo.com/?q=',
+            wikipedia: 'https://es.wikipedia.org/wiki/Special:Search?search=',
+            maps: 'https://www.google.com/maps/search/'
         };
 
-        window.spinLetter = async function() {
-    if (!currentRoomId || !latestRoomData) return;
-    const roundNum = latestRoomData.currentRound || 1;
+        const BANG_COMMANDS = {
+            '!yt': { engine: 'youtube', label: 'Buscar en YouTube' },
+            '!w': { engine: 'wikipedia', label: 'Buscar en Wikipedia' },
+            '!m': { engine: 'maps', label: 'Buscar en Google Maps' },
+            '!ddg': { engine: 'duckduckgo', label: 'Buscar en DuckDuckGo' },
+            '!g': { engine: 'google', label: 'Buscar en Google' }
+        };
 
-    // 1. Letras ya usadas en esta partida
-    const usedInMatch = Object.values(latestRoomData.roundLetters || {});
+        const searchInput = document.getElementById('search-input');
+        const searchHelper = document.getElementById('search-helper');
+        const searchHelperText = document.getElementById('search-helper-text');
+        const searchHelperCopy = document.getElementById('search-helper-copy');
+        let currentLiveMathResult = null;
 
-    // 2. Últimas letras jugadas en partidas recientes (guardadas en el navegador)
-    let recentLetters = [];
-    try {
-        recentLetters = JSON.parse(localStorage.getItem('tf_recent_letters') || '[]');
-    } catch (e) {
-        recentLetters = [];
-    }
+        // Evaluador matemático con soporte inteligente de porcentajes (%)
+        // Soporta: "1000 + 21%" -> 1210, "5000 - 15%" -> 4250, "2500 * 10%" -> 250, "50%" -> 0.5
+        function evaluateMathWithPercent(exprString) {
+            let expr = exprString.replace(/,/g, '.').trim();
+            if (!/^[0-9+\-*/().%\s]+$/.test(expr) || !/\d/.test(expr)) {
+                return null;
+            }
 
-    // 3. Filtrar para no repetir ninguna de la partida actual ni de las recientes
-    let available = ALPHABET.filter(l => !usedInMatch.includes(l) && !recentLetters.includes(l));
+            let prev;
+            const addSubPercentRegex = /(\d+(?:\.\d+)?)\s*([+\-])\s*(\d+(?:\.\d+)?)%/;
+            let guard = 0;
+            while (addSubPercentRegex.test(expr) && guard < 10) {
+                prev = expr;
+                expr = expr.replace(addSubPercentRegex, '($1 $2 ($1 * $3 / 100))');
+                if (prev === expr) break;
+                guard++;
+            }
 
-    // Si por jugar muchas rondas quedan pocas disponibles, priorizar no repetir las de esta partida
-    if (available.length === 0) {
-        available = ALPHABET.filter(l => !usedInMatch.includes(l));
-    }
-    if (available.length === 0) {
-        available = [...ALPHABET];
-    }
+            expr = expr.replace(/(\d+(?:\.\d+)?)%/g, '($1 / 100)');
 
-    // 4. Sorteo aleatorio real con Web Crypto API
-    const randomBuffer = new Uint32Array(1);
-    window.crypto.getRandomValues(randomBuffer);
-    const randIndex = randomBuffer[0] % available.length;
-    const randLetter = available[randIndex];
+            const result = Function('"use strict"; return (' + expr + ')')();
+            if (typeof result === 'number' && isFinite(result)) {
+                return Number(result.toFixed(4));
+            }
+            return null;
+        }
 
-    // 5. Guardar en el historial reciente (recuerda las últimas 10 letras)
-    recentLetters.push(randLetter);
-    if (recentLetters.length > 10) recentLetters.shift();
-    localStorage.setItem('tf_recent_letters', JSON.stringify(recentLetters));
+        searchInput.addEventListener('input', () => {
+            const raw = searchInput.value.trim();
+            currentLiveMathResult = null;
 
-    const roomRef = doc(db, 'rooms', currentRoomId);
-    await updateDoc(roomRef, {
-        activeLetter: randLetter,
-        [`roundLetters.${roundNum}`]: randLetter,
-        status: 'playing'
-    });
-};
+            const firstWord = raw.split(' ')[0].toLowerCase();
+            if (BANG_COMMANDS[firstWord]) {
+                searchHelperText.textContent = `Atajo activo: ${BANG_COMMANDS[firstWord].label}`;
+                searchHelperCopy.classList.add('hidden');
+                searchHelper.classList.remove('hidden');
+                searchHelper.classList.add('flex');
+                return;
+            }
 
-        function startPlayPhase(room) {
-            switchView('playView');
-            const roundNum = room.currentRound || 1;
-            document.getElementById('playRoundNum').innerText = roundNum;
-            document.getElementById('activeLetter').innerText = room.activeLetter;
-
-            myDraftAnswers = {};
-            isSubmittingNow = false;
-
-            const btn = document.getElementById('altoElFuegoBtn');
-            btn.disabled = false;
-            btn.innerHTML = `¡ALTO EL FUEGO! <i class="fa-solid fa-hand-paper ml-2"></i>`;
-
-            const container = document.getElementById('categoriesContainer');
-            container.innerHTML = '';
-
-            CATEGORIES.forEach((cat, index) => {
-                container.innerHTML += `
-                    <div class="bg-white/5 border border-white/10 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <label class="font-semibold text-purple-200 text-sm sm:w-1/3">${cat}</label>
-                        <input type="text" id="cat_${index}" oninput="updateDraft(${index}, this.value)" placeholder="Con '${room.activeLetter}'..." 
-                            class="w-full sm:w-2/3 bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-pink-500 uppercase">
-                    </div>
-                `;
-            });
-
-            let timeLeft = room.timePerRound;
-            document.getElementById('timerCountdown').innerText = timeLeft;
-
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timerCountdown').innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    submitAltoElFuego();
+            const isMath = /^[0-9+\-*/().%\s]+$/.test(raw) && /[+\-*/%]/.test(raw) && /\d/.test(raw);
+            if (isMath) {
+                try {
+                    const result = evaluateMathWithPercent(raw);
+                    if (result !== null) {
+                        currentLiveMathResult = String(result);
+                        searchHelperText.textContent = `Resultado: ${result.toLocaleString('es-AR')}`;
+                        searchHelperCopy.classList.remove('hidden');
+                        searchHelper.classList.remove('hidden');
+                        searchHelper.classList.add('flex');
+                        return;
+                    }
+                } catch (err) {
+                    // Expresión matemática incompleta mientras escribe
                 }
-            }, 1000);
+            }
+
+            searchHelper.classList.add('hidden');
+            searchHelper.classList.remove('flex');
+        });
+
+        searchHelperCopy.addEventListener('click', () => {
+            if (!currentLiveMathResult) return;
+            searchInput.value = currentLiveMathResult;
+            searchInput.select();
+            document.execCommand('copy');
+            searchHelperCopy.textContent = '¡Copiado!';
+            setTimeout(() => {
+                searchHelperCopy.textContent = 'Copiar';
+            }, 1500);
+        });
+
+        document.getElementById('search-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            let query = searchInput.value.trim();
+            let engine = document.getElementById('search-engine').value;
+            if (!query) return;
+
+            const parts = query.split(' ');
+            const prefix = parts[0].toLowerCase();
+            if (BANG_COMMANDS[prefix] && parts.length > 1) {
+                engine = BANG_COMMANDS[prefix].engine;
+                query = parts.slice(1).join(' ');
+            }
+
+            const isUrl = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i.test(query) && !query.includes(' ');
+            if (isUrl && engine === 'google') {
+                const targetUrl = query.startsWith('http') ? query : `https://${query}`;
+                window.open(targetUrl, '_blank', 'noopener');
+            } else {
+                const searchUrl = SEARCH_ENGINES[engine] + encodeURIComponent(query);
+                window.open(searchUrl, '_blank', 'noopener');
+            }
+            searchInput.value = '';
+            searchInput.blur();
+            searchHelper.classList.add('hidden');
+            searchHelper.classList.remove('flex');
+        });
+
+        window.addEventListener('keydown', (e) => {
+            const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+            if (e.key === '/' && activeTag !== 'input' && activeTag !== 'textarea') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
+
+        // ==========================================
+        // ACCESOS RÁPIDOS (FAVORITOS + MODO EDITAR iOS PARA CELULAR)
+        // ==========================================
+        function getDomain(url) {
+            try {
+                return new URL(url).hostname;
+            } catch (err) {
+                return url;
+            }
         }
 
-        function collectCurrentInputs() {
-            const answers = {};
-            CATEGORIES.forEach((cat, index) => {
-                const el = document.getElementById(`cat_${index}`);
-                const domVal = el ? el.value.trim().toUpperCase() : '';
-                answers[cat] = domVal || myDraftAnswers[cat] || '';
+        function renderLinks() {
+            const grid = document.getElementById('links-grid');
+            const editLabel = document.getElementById('edit-links-label');
+            const editBtn = document.getElementById('edit-links-btn');
+            grid.innerHTML = '';
+
+            if (state.editLinksMode) {
+                grid.classList.add('jiggle-mode');
+                editLabel.textContent = 'Listo';
+                editBtn.classList.add('bg-[#007AFF]', 'text-white');
+            } else {
+                grid.classList.remove('jiggle-mode');
+                editLabel.textContent = 'Editar';
+                editBtn.classList.remove('bg-[#007AFF]', 'text-white');
+            }
+
+            const filteredLinks = state.activeCategory === 'todos'
+                ? state.links
+                : state.links.filter(l => (l.category || 'frecuentes') === state.activeCategory);
+
+            filteredLinks.forEach((link) => {
+                const domain = getDomain(link.url);
+                const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+                const initial = encodeURIComponent((link.title || 'S').charAt(0).toUpperCase());
+
+                const card = document.createElement('div');
+                card.className = 'link-card-item group relative glass-card bg-white/70 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] hover:scale-[1.03] active:scale-95 rounded-[22px] p-2.5 sm:p-3 flex flex-col items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200';
+
+                const deleteBadgeVisibility = state.editLinksMode
+                    ? 'opacity-100 scale-100 bg-[#FF453A] text-white'
+                    : 'opacity-0 group-hover:opacity-100 focus:opacity-100 bg-slate-200 dark:bg-[#3A3A3C] text-slate-600 dark:text-white/80 hover:bg-[#FF453A] hover:text-white';
+
+                card.innerHTML = `
+                    <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center gap-1.5 sm:gap-2 w-full min-w-0">
+                        <div class="w-11 h-11 sm:w-12 sm:h-12 apple-squircle bg-white dark:bg-[#2C2C2E] flex items-center justify-center p-2 shrink-0">
+                            <img src="${faviconUrl}" alt="${link.title}" class="w-full h-full object-contain rounded-md" onerror="this.src='https://placehold.co/64x64/007AFF/ffffff?text=${initial}'">
+                        </div>
+                        <span class="text-[11px] sm:text-xs font-medium truncate max-w-full text-slate-800 dark:text-white/90">${link.title}</span>
+                    </a>
+                    <button data-delete-link="${link.id}" class="${deleteBadgeVisibility} absolute -top-1.5 -right-1.5 w-6 h-6 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shadow-md transition z-10" title="Eliminar ícono">
+                        <i data-lucide="minus" class="w-3.5 h-3.5 sm:w-3 sm:h-3"></i>
+                    </button>
+                `;
+
+                grid.appendChild(card);
             });
-            return answers;
+
+            lucide.createIcons();
+
+            grid.querySelectorAll('[data-delete-link]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const id = btn.getAttribute('data-delete-link');
+                    const updated = state.links.filter(item => item.id !== id);
+                    saveState('links', updated);
+                    renderLinks();
+                });
+            });
         }
 
-        async function pushMyAnswersToFirestore(roundNum, triggerStop) {
-            if (!currentRoomId || !currentUser || isSubmittingNow) return;
-            isSubmittingNow = true;
-            localSubmittedRound = roundNum;
+        document.getElementById('edit-links-btn').addEventListener('click', () => {
+            state.editLinksMode = !state.editLinksMode;
+            renderLinks();
+        });
 
-            const btn = document.getElementById('altoElFuegoBtn');
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = `Enviando respuestas... <i class="fa-solid fa-spinner fa-spin ml-2"></i>`;
+        document.querySelectorAll('.cat-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.activeCategory = btn.getAttribute('data-cat');
+                document.querySelectorAll('.cat-pill').forEach(b => {
+                    b.className = 'cat-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0';
+                });
+                btn.className = 'cat-pill px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm transition shrink-0';
+                renderLinks();
+            });
+        });
+
+        // ==========================================
+        // LISTA DE TAREAS (ESTILO APPLE REMINDERS - TÁCTIL Y PC)
+        // ==========================================
+        function renderTodos() {
+            const list = document.getElementById('todo-list');
+            const countBadge = document.getElementById('todo-count');
+            const filterBtn = document.getElementById('todo-filter-btn');
+            list.innerHTML = '';
+
+            const pendingCount = state.todos.filter(t => !t.done).length;
+            countBadge.textContent = pendingCount;
+            if (filterBtn) {
+                filterBtn.textContent = state.todoFilter === 'pending' ? 'Pendientes' : 'Todos';
             }
 
-            const answers = collectCurrentInputs();
-            const roomRef = doc(db, 'rooms', currentRoomId);
+            const visibleTodos = state.todoFilter === 'pending'
+                ? state.todos.filter(t => !t.done)
+                : state.todos;
 
-            // Uso de dot-notation: SOLO actualiza las respuestas de ESTE jugador sin pisar las del otro
-            const updatePayload = {
-                [`players.${currentUser.uid}.answers`]: answers,
-                [`players.${currentUser.uid}.roundAnswers.${roundNum}`]: answers,
-                [`players.${currentUser.uid}.submittedRound`]: roundNum
-            };
-
-            if (triggerStop) {
-                updatePayload.status = 'stopping';
+            if (visibleTodos.length === 0) {
+                list.innerHTML = `<li class="text-xs text-slate-400 dark:text-white/40 text-center py-10">Sin recordatorios pendientes</li>`;
+                return;
             }
+
+            visibleTodos.forEach(todo => {
+                const li = document.createElement('li');
+                li.className = 'flex items-center justify-between gap-2.5 py-2.5 sm:py-2 px-1 transition group';
+
+                li.innerHTML = `
+                    <label class="flex items-center gap-3 cursor-pointer flex-1 min-w-0">
+                        <input type="checkbox" ${todo.done ? 'checked' : ''} data-toggle-todo="${todo.id}" class="sr-only peer">
+                        <span class="w-5 h-5 sm:w-4 sm:h-4 rounded-full border-2 border-slate-300 dark:border-white/35 peer-checked:border-[#007AFF] peer-checked:bg-[#007AFF] flex items-center justify-center transition shrink-0">
+                            <span class="w-2 h-2 sm:w-1.5 sm:h-1.5 rounded-full bg-white ${todo.done ? 'opacity-100' : 'opacity-0'}"></span>
+                        </span>
+                        <span class="text-xs sm:text-sm truncate ${todo.done ? 'line-through text-slate-400 dark:text-white/35' : 'text-slate-800 dark:text-white/90'}">${todo.text}</span>
+                    </label>
+                    <button data-delete-todo="${todo.id}" class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 text-slate-400 hover:text-[#FF453A] active:text-[#FF453A] p-1.5 sm:p-1 transition shrink-0" title="Eliminar recordatorio">
+                        <i data-lucide="x" class="w-4 h-4 sm:w-3.5 sm:h-3.5"></i>
+                    </button>
+                `;
+                list.appendChild(li);
+            });
+
+            lucide.createIcons();
+
+            list.querySelectorAll('[data-toggle-todo]').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    const id = checkbox.getAttribute('data-toggle-todo');
+                    const updated = state.todos.map(t => t.id === id ? { ...t, done: !t.done } : t);
+                    saveState('todos', updated);
+                    renderTodos();
+                });
+            });
+
+            list.querySelectorAll('[data-delete-todo]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-delete-todo');
+                    const updated = state.todos.filter(t => t.id !== id);
+                    saveState('todos', updated);
+                    renderTodos();
+                });
+            });
+        }
+
+        document.getElementById('todo-filter-btn').addEventListener('click', () => {
+            state.todoFilter = state.todoFilter === 'all' ? 'pending' : 'all';
+            renderTodos();
+        });
+
+        document.getElementById('todo-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('todo-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const newTodo = { id: Date.now().toString(), text, done: false };
+            saveState('todos', [newTodo, ...state.todos]);
+            input.value = '';
+            renderTodos();
+        });
+
+        document.getElementById('clear-completed-btn').addEventListener('click', () => {
+            const activeTodos = state.todos.filter(t => !t.done);
+            saveState('todos', activeTodos);
+            renderTodos();
+        });
+
+        // ==========================================
+        // BLOC DE NOTAS RÁPIDAS (SINCRONIZADO EN TIEMPO REAL)
+        // ==========================================
+        const notesArea = document.getElementById('notes-area');
+        const notesStatus = document.getElementById('notes-status');
+        const notesCharCount = document.getElementById('notes-char-count');
+        notesArea.value = state.notes;
+
+        function updateNotesCounter() {
+            if (notesCharCount) {
+                notesCharCount.textContent = `${(notesArea.value || '').length} car.`;
+            }
+        }
+        updateNotesCounter();
+
+        notesArea.addEventListener('input', () => {
+            notesStatus.textContent = 'Sincronizando...';
+            updateNotesCounter();
+            saveState('notes', notesArea.value, false);
+        });
+
+        document.getElementById('copy-notes-btn').addEventListener('click', () => {
+            notesArea.select();
+            document.execCommand('copy');
+            notesStatus.textContent = '¡Copiado!';
+            setTimeout(() => {
+                notesStatus.textContent = 'Sincronizado';
+            }, 1500);
+        });
+
+        document.getElementById('clear-notes-btn').addEventListener('click', () => {
+            notesArea.value = '';
+            updateNotesCounter();
+            saveState('notes', '', true);
+            notesStatus.textContent = 'Limpiado';
+        });
+
+        // ==========================================
+        // WIDGET 3: CALCULADORA PRIMERO Y FOCO SEGUNDO
+        // ==========================================
+        const tabCalc = document.getElementById('tab-calc');
+        const tabTimer = document.getElementById('tab-timer');
+        const panelCalc = document.getElementById('panel-calc');
+        const panelTimer = document.getElementById('panel-timer');
+
+        tabCalc.addEventListener('click', () => {
+            panelCalc.classList.remove('hidden');
+            panelTimer.classList.add('hidden');
+            tabCalc.className = 'px-3.5 py-1 rounded-full bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm transition';
+            tabTimer.className = 'px-3.5 py-1 rounded-full text-slate-500 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition';
+        });
+
+        tabTimer.addEventListener('click', () => {
+            panelTimer.classList.remove('hidden');
+            panelCalc.classList.add('hidden');
+            tabTimer.className = 'px-3.5 py-1 rounded-full bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm transition';
+            tabCalc.className = 'px-3.5 py-1 rounded-full text-slate-500 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition';
+        });
+
+        // Lógica de la Calculadora iOS con soporte %
+        const calcDisplay = document.getElementById('calc-display');
+        let calcExpr = '';
+
+        document.querySelectorAll('[data-calc]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const val = btn.getAttribute('data-calc');
+                if (val === 'C') {
+                    calcExpr = '';
+                    calcDisplay.value = '';
+                } else if (val === 'BACK') {
+                    calcExpr = calcExpr.slice(0, -1);
+                    calcDisplay.value = calcExpr;
+                } else if (val === '=') {
+                    try {
+                        const result = evaluateMathWithPercent(calcExpr);
+                        if (result !== null) {
+                            calcExpr = String(result);
+                            calcDisplay.value = calcExpr;
+                        } else {
+                            calcDisplay.value = 'Error';
+                            calcExpr = '';
+                        }
+                    } catch (err) {
+                        calcDisplay.value = 'Error';
+                        calcExpr = '';
+                    }
+                } else {
+                    calcExpr += val;
+                    calcDisplay.value = calcExpr;
+                }
+            });
+        });
+
+        // Lógica del Temporizador de Foco
+        let timerSeconds = 1500;
+        let timerInterval = null;
+        const timerDisplay = document.getElementById('timer-display');
+        const timerStartBtn = document.getElementById('timer-start');
+
+        function formatTimer(sec) {
+            const m = String(Math.floor(sec / 60)).padStart(2, '0');
+            const s = String(sec % 60).padStart(2, '0');
+            timerDisplay.textContent = `${m}:${s}`;
+        }
+
+        function playTimerBeep() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                osc.frequency.setValueAtTime(880, ctx.currentTime + 0.18);
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.6);
+            } catch (err) {
+                // Audio bloqueado por el navegador
+            }
+        }
+
+        timerStartBtn.addEventListener('click', () => {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timerStartBtn.innerHTML = '<i data-lucide="play" class="w-3.5 h-3.5"></i><span>Continuar</span>';
+                lucide.createIcons();
+            } else {
+                timerStartBtn.innerHTML = '<i data-lucide="pause" class="w-3.5 h-3.5"></i><span>Pausar</span>';
+                lucide.createIcons();
+                timerInterval = setInterval(() => {
+                    if (timerSeconds > 0) {
+                        timerSeconds--;
+                        formatTimer(timerSeconds);
+                    } else {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        playTimerBeep();
+                        timerStartBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i><span>¡Tiempo cumplido!</span>';
+                        lucide.createIcons();
+                    }
+                }, 1000);
+            }
+        });
+
+        document.getElementById('timer-reset').addEventListener('click', () => {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerSeconds = 1500;
+            formatTimer(timerSeconds);
+            timerStartBtn.innerHTML = '<i data-lucide="play" class="w-3.5 h-3.5"></i><span>Iniciar</span>';
+            lucide.createIcons();
+        });
+
+        document.querySelectorAll('.timer-preset').forEach(btn => {
+            btn.addEventListener('click', () => {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timerSeconds = parseInt(btn.getAttribute('data-time'), 10);
+                formatTimer(timerSeconds);
+                timerStartBtn.innerHTML = '<i data-lucide="play" class="w-3.5 h-3.5"></i><span>Iniciar</span>';
+                lucide.createIcons();
+            });
+        });
+
+        // ==========================================
+        // CLIMA EN VIVO (Open-Meteo API) Y DÓLAR (DolarApi)
+        // ==========================================
+        async function fetchWeather(cityName) {
+            const tempEl = document.getElementById('weather-temp');
+            const cityEl = document.getElementById('weather-city');
+            cityEl.textContent = cityName;
 
             try {
-                await updateDoc(roomRef, updatePayload);
-            } catch (e) {
-                console.error("Error enviando respuestas:", e);
-            } finally {
-                isSubmittingNow = false;
-            }
-        }
-
-        window.submitAltoElFuego = async function() {
-            if (timerInterval) clearInterval(timerInterval);
-            if (!latestRoomData) return;
-            const roundNum = latestRoomData.currentRound || 1;
-            await pushMyAnswersToFirestore(roundNum, true);
-        };
-
-        // Cálculo 100% determinista e idempotente a partir del historial de rondas (imposible que sume doble o falle)
-        function calculateDeterministicScores(room) {
-            const players = room.players || {};
-            const uids = Object.keys(players);
-            const maxRound = room.currentRound || 1;
-            const roundLetters = room.roundLetters || {};
-
-            const totalScores = {};
-            const currentRoundScores = {};
-            const currentRoundWordPts = {};
-
-            uids.forEach(uid => {
-                totalScores[uid] = 0;
-                currentRoundScores[uid] = 0;
-                currentRoundWordPts[uid] = {};
-            });
-
-            for (let r = 1; r <= maxRound; r++) {
-                const rawLetter = (roundLetters[r]) ? roundLetters[r] : (r === maxRound ? room.activeLetter : '');
-                const letter = normalizeWord(rawLetter);
-                if (!letter) continue;
-
-                CATEGORIES.forEach(cat => {
-                    const wordFreq = {};
-                    const cleanByUid = {};
-
-                    // 1. Normalizar palabras y contar cuántas veces aparecen en esta categoría
-                    uids.forEach(uid => {
-                        const p = players[uid];
-                        const rAnswers = (p.roundAnswers && p.roundAnswers[r])
-                            ? p.roundAnswers[r]
-                            : (r === maxRound ? (p.answers || {}) : {});
-                        const rawWord = rAnswers[cat] || '';
-                        const cleanWord = normalizeWord(rawWord);
-
-                        // Debe empezar con la letra de la ronda y tener al menos 2 letras
-                        if (cleanWord.length >= 2 && cleanWord.startsWith(letter)) {
-                            cleanByUid[uid] = cleanWord;
-                            wordFreq[cleanWord] = (wordFreq[cleanWord] || 0) + 1;
-                        } else {
-                            cleanByUid[uid] = '';
-                        }
-                    });
-
-                    // 2. Asignar 5 puntos si se repite, 10 puntos si es única, 0 si está vacía/inválida
-                    uids.forEach(uid => {
-                        const cleanWord = cleanByUid[uid];
-                        let pts = 0;
-                        if (cleanWord) {
-                            pts = wordFreq[cleanWord] > 1 ? 5 : 10;
-                        }
-                        totalScores[uid] += pts;
-                        if (r === maxRound) {
-                            currentRoundScores[uid] += pts;
-                            currentRoundWordPts[uid][cat] = pts;
-                        }
-                    });
-                });
-            }
-
-            return { totalScores, currentRoundScores, currentRoundWordPts };
-        }
-
-        function showScoresScreen(room) {
-            switchView('scoresView');
-            const isHost = room.hostUid === currentUser.uid;
-            const roundNum = room.currentRound || 1;
-            const isFinalRound = roundNum >= room.rounds;
-
-            const { totalScores, currentRoundScores, currentRoundWordPts } = calculateDeterministicScores(room);
-
-            if (isFinalRound) {
-                document.getElementById('scoresTitle').innerText = "🏆 ¡Podio de Ganadores!";
-                document.getElementById('scoresSubtitle').innerText = `Partida finalizada (${room.rounds} rondas completadas).`;
-                document.getElementById('nextRoundBtn').innerText = "Volver a la Sala / Jugar de Nuevo";
-                document.getElementById('nextRoundBtn').setAttribute("onclick", "returnToLobby()");
-            } else {
-                document.getElementById('scoresTitle').innerText = `Puntajes - Ronda ${roundNum} de ${room.rounds}`;
-                document.getElementById('scoresSubtitle').innerText = `Letra '${room.activeLetter}' • 10 pts única / 5 pts repetida`;
-                document.getElementById('nextRoundBtn').innerText = "Siguiente Ronda ➔";
-                document.getElementById('nextRoundBtn').setAttribute("onclick", "nextRound()");
-            }
-
-            if (isHost) {
-                document.getElementById('hostNextContainer').classList.remove('hidden');
-                document.getElementById('guestNextText').classList.add('hidden');
-            } else {
-                document.getElementById('hostNextContainer').classList.add('hidden');
-                document.getElementById('guestNextText').classList.remove('hidden');
-            }
-
-            const players = room.players || {};
-            const container = document.getElementById('scoresListContainer');
-            container.innerHTML = '';
-
-            const sortedPlayers = Object.values(players).sort((a, b) => (totalScores[b.uid] || 0) - (totalScores[a.uid] || 0));
-
-            sortedPlayers.forEach((p, index) => {
-                let badge = "";
-                if (isFinalRound) {
-                    if (index === 0) badge = "🥇 1° Puesto - ";
-                    else if (index === 1) badge = "🥈 2° Puesto - ";
-                    else if (index === 2) badge = "🥉 3° Puesto - ";
-                    else badge = `${index + 1}° Puesto - `;
+                const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=es&format=json`);
+                const geoData = await geoRes.json();
+                if (!geoData.results || geoData.results.length === 0) {
+                    tempEl.textContent = '--°C';
+                    return;
                 }
+                const { latitude, longitude, name } = geoData.results[0];
+                cityEl.textContent = name;
 
-                const rAnswers = (p.roundAnswers && p.roundAnswers[roundNum]) ? p.roundAnswers[roundNum] : (p.answers || {});
-                const total = totalScores[p.uid] || 0;
-                const roundPts = currentRoundScores[p.uid] || 0;
+                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+                const weatherData = await weatherRes.json();
+                if (weatherData.current_weather) {
+                    const temp = Math.round(weatherData.current_weather.temperature);
+                    tempEl.textContent = `${temp}°C`;
+                }
+            } catch (err) {
+                tempEl.textContent = '--°C';
+            }
+        }
 
-                container.innerHTML += `
-                    <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-bold text-yellow-300 text-base"><i class="fa-solid fa-user-circle mr-2"></i>${badge}${p.nickname}</span>
-                            <div class="text-right">
-                                <span class="text-xs bg-pink-500/20 text-pink-300 px-2 py-0.5 rounded-lg mr-1">+${roundPts} en ronda</span>
-                                <span class="font-extrabold text-pink-400 text-lg">${total} pts totales</span>
+        async function fetchDolar() {
+            const rateEl = document.getElementById('dolar-rate');
+            try {
+                const res = await fetch('https://dolarapi.com/v1/dolares');
+                const data = await res.json();
+                if (Array.isArray(data)) {
+                    state.dolarData = data;
+                    const blue = data.find(d => d.casa === 'blue') || data[0];
+                    if (blue && blue.venta) {
+                        rateEl.textContent = `$${blue.venta}`;
+                    }
+                }
+            } catch (err) {
+                rateEl.textContent = '$---';
+            }
+        }
+
+        // ==========================================
+        // SISTEMA DE VENTANA MODAL PERSONALIZADA (MÓVIL + PC)
+        // ==========================================
+        const modal = document.getElementById('custom-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const modalForm = document.getElementById('modal-form');
+        const modalSubmitBtn = document.getElementById('modal-submit-btn');
+        let currentModalSubmit = null;
+
+        function openModal(title, bodyHTML, onSubmit, showSubmit = true) {
+            modalTitle.textContent = title;
+            modalBody.innerHTML = bodyHTML;
+            currentModalSubmit = onSubmit;
+            if (showSubmit) {
+                modalSubmitBtn.classList.remove('hidden');
+            } else {
+                modalSubmitBtn.classList.add('hidden');
+            }
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            const firstInput = modalBody.querySelector('input[type="text"], input[type="url"]');
+            if (firstInput && window.innerWidth >= 640) {
+                setTimeout(() => firstInput.focus(), 50);
+            }
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            currentModalSubmit = null;
+        }
+
+        document.getElementById('modal-close').addEventListener('click', closeModal);
+        document.getElementById('modal-cancel').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        modalForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (currentModalSubmit) currentModalSubmit();
+            closeModal();
+        });
+
+        // 0. GUÍA RÁPIDA PARA INSTALAR COMO APP EN CELULAR (iOS / ANDROID)
+        const installGuideBtn = document.getElementById('install-guide-btn');
+        if (installGuideBtn) {
+            installGuideBtn.addEventListener('click', () => {
+                openModal(
+                    'Usar en tu Celular (iPhone / Android)',
+                    `
+                    <div class="space-y-3 text-xs text-slate-600 dark:text-white/75 leading-relaxed">
+                        <div class="p-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] space-y-1">
+                            <p class="font-semibold text-slate-900 dark:text-white">En iPhone (Safari):</p>
+                            <p>1. Tocá el botón <b>Compartir</b> (el cuadrado con la flecha hacia arriba) en la barra inferior.</p>
+                            <p>2. Elegí <b>"Agregar a Inicio"</b>. Se instalará como una app a pantalla completa.</p>
+                        </div>
+                        <div class="p-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] space-y-1">
+                            <p class="font-semibold text-slate-900 dark:text-white">En Android (Chrome):</p>
+                            <p>1. Tocá los tres puntos <b>⋮</b> arriba a la derecha.</p>
+                            <p>2. Tocá <b>"Agregar a la pantalla principal"</b> o configurala como tu página principal en Ajustes de Chrome.</p>
+                        </div>
+                    </div>
+                    `,
+                    () => {},
+                    false
+                );
+            });
+        }
+
+        // 1. MODAL DE SINCRONIZACIÓN EN LA NUBE (FIRESTORE PC ↔ CELULAR)
+        document.getElementById('cloud-sync-btn').addEventListener('click', () => {
+            const lastSyncStr = state.lastSyncedAt
+                ? state.lastSyncedAt.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                : 'Pendiente';
+            const fullUid = currentUser ? currentUser.uid : 'Sin sesión activa';
+            const shareableUrl = `${window.location.origin}${window.location.pathname}?sync=${encodeURIComponent(state.syncKey)}`;
+
+            openModal(
+                'iCloud Sync · Nube en Tiempo Real',
+                `
+                <div class="space-y-3.5">
+                    <div class="p-3 rounded-2xl bg-[#007AFF]/10 border border-[#007AFF]/25 flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-full bg-[#007AFF] text-white flex items-center justify-center shrink-0">
+                                <i data-lucide="cloud-lightning" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-900 dark:text-white">Sincronización Firestore</p>
+                                <p class="text-[11px] text-slate-500 dark:text-white/60">Última actualización: <b>${lastSyncStr}</b></p>
                             </div>
                         </div>
-                        <div class="text-xs text-purple-200 grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
-                            ${CATEGORIES.map(cat => {
-                                const w = rAnswers[cat] ? rAnswers[cat] : '-';
-                                const pts = (currentRoundWordPts[p.uid] && currentRoundWordPts[p.uid][cat]) || 0;
-                                const ptsColor = pts === 10 ? 'text-green-400 font-bold' : (pts === 5 ? 'text-yellow-300 font-bold' : 'text-gray-500');
-                                return `<div><span class="text-purple-400">${cat}:</span> ${w} <span class="${ptsColor}">(+${pts})</span></div>`;
-                            }).join('')}
-                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#30D158]/20 text-[#30D158]">EN VIVO</span>
                     </div>
-                `;
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 dark:text-white/75 mb-1">
+                            Código de Sincronización (PC y Celular)
+                        </label>
+                        <p class="text-[11px] text-slate-500 dark:text-white/50 mb-2">
+                            Usá este mismo código en tu computadora y en tu celular para que compartan tus notas, recordatorios, accesos y fondo al instante.
+                        </p>
+                        <div class="flex gap-2">
+                            <input id="modal-sync-key" type="text" value="${state.syncKey}" placeholder="Ej: angel-inicio" class="w-full bg-black/[0.05] dark:bg-white/[0.08] border border-slate-300 dark:border-white/15 rounded-xl px-3.5 py-2 text-base sm:text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#007AFF]">
+                            <button type="button" id="copy-sync-key-btn" class="px-3 py-2 rounded-xl bg-black/[0.06] dark:bg-white/[0.1] active:scale-95 text-xs font-semibold shrink-0">
+                                Copiar link
+                            </button>
+                        </div>
+                        <input id="modal-share-url" type="text" value="${shareableUrl}" readonly class="sr-only">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <button type="button" id="force-cloud-push" class="py-2.5 px-3 rounded-xl bg-black/[0.05] dark:bg-white/[0.08] active:scale-95 text-xs font-medium flex items-center justify-center gap-1.5 transition">
+                            <i data-lucide="upload-cloud" class="w-3.5 h-3.5 text-[#007AFF]"></i>
+                            Subir ahora
+                        </button>
+                        <button type="button" id="force-cloud-pull" class="py-2.5 px-3 rounded-xl bg-black/[0.05] dark:bg-white/[0.08] active:scale-95 text-xs font-medium flex items-center justify-center gap-1.5 transition">
+                            <i data-lucide="download-cloud" class="w-3.5 h-3.5 text-[#30D158]"></i>
+                            Descargar de nube
+                        </button>
+                    </div>
+
+                    <div class="pt-2 border-t border-black/5 dark:border-white/10">
+                        <p class="text-[10px] text-slate-400 dark:text-white/40 font-mono break-all">
+                            ID de sesión dispositivo: ${fullUid}
+                        </p>
+                    </div>
+                </div>
+                `,
+                async () => {
+                    const inputVal = document.getElementById('modal-sync-key').value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-');
+                    if (inputVal && inputVal !== state.syncKey) {
+                        const newUrl = `${window.location.pathname}?sync=${encodeURIComponent(inputVal)}`;
+                        window.history.replaceState(null, '', newUrl);
+                        await subscribeToWorkspace(inputVal);
+                    }
+                }
+            );
+
+            lucide.createIcons();
+
+            document.getElementById('copy-sync-key-btn').addEventListener('click', (e) => {
+                const keyVal = document.getElementById('modal-sync-key').value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-') || state.syncKey;
+                const fullLink = `${window.location.origin}${window.location.pathname}?sync=${encodeURIComponent(keyVal)}`;
+                const hiddenUrl = document.getElementById('modal-share-url');
+                hiddenUrl.value = fullLink;
+                hiddenUrl.classList.remove('sr-only');
+                hiddenUrl.select();
+                document.execCommand('copy');
+                hiddenUrl.classList.add('sr-only');
+                e.currentTarget.textContent = '¡Copiado!';
+            });
+
+            document.getElementById('force-cloud-push').addEventListener('click', async () => {
+                await pushStateToCloud(true);
+                closeModal();
+            });
+
+            document.getElementById('force-cloud-pull').addEventListener('click', async () => {
+                if (!db || !currentUser) return;
+                const snap = await getDoc(getWorkspaceDocRef(state.syncKey));
+                if (snap.exists()) {
+                    applyRemoteDataToUI(snap.data());
+                }
+                closeModal();
+            });
+        });
+
+        // 1.5. Selector de Color de Acento Apple (PC y Móvil)
+        function openAccentModal() {
+            const swatchesHtml = ACCENT_COLORS.map(c => `
+                <button type="button" data-accent-hex="${c.hex}" class="accent-swatch-btn flex items-center gap-2.5 p-3 sm:p-2.5 rounded-2xl border ${state.accentColor === c.hex ? 'border-[#007AFF] bg-[#007AFF]/10' : 'border-black/10 dark:border-white/10'} active:scale-95 transition">
+                    <span class="w-5 h-5 rounded-full shrink-0 shadow-sm" style="background-color: ${c.hex}"></span>
+                    <span class="text-xs font-medium">${c.name}</span>
+                </button>
+            `).join('');
+
+            openModal(
+                'Color de Acento Apple',
+                `<div class="grid grid-cols-2 gap-2">${swatchesHtml}</div>`,
+                () => {},
+                false
+            );
+
+            document.querySelectorAll('.accent-swatch-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const hex = btn.getAttribute('data-accent-hex');
+                    saveState('accentColor', hex);
+                    applyAccentColor();
+                    closeModal();
+                });
             });
         }
 
-        window.nextRound = async function() {
-            if (!currentRoomId || !latestRoomData) return;
-            const roomRef = doc(db, 'rooms', currentRoomId);
-            const nextR = (latestRoomData.currentRound || 1) + 1;
+        document.getElementById('accent-btn').addEventListener('click', openAccentModal);
+        document.getElementById('accent-btn-mobile').addEventListener('click', openAccentModal);
 
-            if (latestRoomData.currentRound < latestRoomData.rounds) {
-                await updateDoc(roomRef, {
-                    currentRound: nextR,
-                    status: 'roulette',
-                    activeLetter: ''
+        // 1.8. Ver Cotizaciones del Dólar
+        document.getElementById('dolar-btn').addEventListener('click', () => {
+            const rows = (state.dolarData && state.dolarData.length > 0)
+                ? state.dolarData.slice(0, 4).map(d => `
+                    <div class="flex items-center justify-between p-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] text-xs">
+                        <span class="font-semibold capitalize text-slate-700 dark:text-slate-200">${d.nombre}</span>
+                        <div class="flex gap-3 tabular-nums">
+                            <span class="text-slate-500">Compra: <b>$${d.compra}</b></span>
+                            <span class="text-[#30D158]">Venta: <b>$${d.venta}</b></span>
+                        </div>
+                    </div>
+                `).join('')
+                : `<p class="text-xs text-slate-400">No se pudieron cargar las cotizaciones en este momento.</p>`;
+
+            openModal(
+                'Cotización del Dólar en Vivo',
+                `<div class="space-y-2">${rows}</div>`,
+                () => {},
+                false
+            );
+        });
+
+        // 2. Cambiar Nombre de Usuario
+        document.getElementById('edit-name-btn').addEventListener('click', () => {
+            openModal(
+                '¿Cómo te llamás?',
+                `<input id="modal-name-input" type="text" value="${state.userName}" placeholder="Tu nombre" class="w-full bg-black/[0.05] dark:bg-white/[0.08] border border-slate-300 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#007AFF]">`,
+                () => {
+                    const val = document.getElementById('modal-name-input').value.trim();
+                    if (val) {
+                        saveState('userName', val);
+                        document.getElementById('user-name-display').textContent = val;
+                    }
+                }
+            );
+        });
+
+        // 3. Agregar Nuevo Sitio Rápido (Con selector de Categoría)
+        document.getElementById('add-link-btn').addEventListener('click', () => {
+            openModal(
+                'Agregar Acceso Rápido',
+                `
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Nombre del sitio</label>
+                    <input id="modal-link-title" type="text" required placeholder="Ej: Netflix, Banco, Facultad..." class="w-full bg-black/[0.05] dark:bg-white/[0.08] border border-slate-300 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#007AFF]">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Dirección web (URL)</label>
+                    <input id="modal-link-url" type="text" required placeholder="Ej: netflix.com" class="w-full bg-black/[0.05] dark:bg-white/[0.08] border border-slate-300 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#007AFF]">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Categoría</label>
+                    <select id="modal-link-cat" class="w-full bg-black/[0.05] dark:bg-white/[0.08] border border-slate-300 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#007AFF]">
+                        <option value="frecuentes" class="bg-white dark:bg-[#1C1C1E]">Frecuentes</option>
+                        <option value="trabajo" class="bg-white dark:bg-[#1C1C1E]">Trabajo & IA</option>
+                        <option value="ocio" class="bg-white dark:bg-[#1C1C1E]">Ocio</option>
+                    </select>
+                </div>
+                `,
+                () => {
+                    const title = document.getElementById('modal-link-title').value.trim();
+                    let url = document.getElementById('modal-link-url').value.trim();
+                    const category = document.getElementById('modal-link-cat').value;
+                    if (!title || !url) return;
+                    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                        url = 'https://' + url;
+                    }
+                    const newLink = { id: Date.now().toString(), title, url, category };
+                    saveState('links', [...state.links, newLink]);
+                    renderLinks();
+                }
+            );
+        });
+
+        // 4. Cambiar Ciudad del Clima
+        document.getElementById('weather-btn').addEventListener('click', () => {
+            openModal(
+                'Ciudad para el Clima',
+                `<input id="modal-city-input" type="text" value="${state.city}" placeholder="Ej: Córdoba, Rosario, Madrid..." class="w-full bg-black/[0.05] dark:bg-white/[0.08] border border-slate-300 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#007AFF]">`,
+                () => {
+                    const val = document.getElementById('modal-city-input').value.trim();
+                    if (val) {
+                        saveState('city', val);
+                        fetchWeather(val);
+                    }
+                }
+            );
+        });
+
+        // 4.5. Selector de Fondo de Pantalla (PC y Móvil)
+        function openWallpaperModal() {
+            const currentWp = state.wallpaper || { type: 'default', value: '', dim: 50, blur: true };
+
+            const presetsHtml = WALLPAPER_PRESETS.map(p => {
+                const bgStyle = p.type === 'image'
+                    ? `background-image: url('${p.preview}'); background-size: cover; background-position: center;`
+                    : `background: ${p.preview};`;
+                return `
+                    <button type="button" data-wp-id="${p.id}" class="wp-preset-btn group relative h-14 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-white/15 hover:border-[#007AFF] active:scale-95 focus:outline-none transition flex items-end p-1.5 text-left" style="${bgStyle}">
+                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/15 transition"></div>
+                        <span class="relative z-10 text-[11px] font-semibold text-white drop-shadow">${p.name}</span>
+                    </button>
+                `;
+            }).join('');
+
+            openModal(
+                'Fondo de Pantalla',
+                `
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1.5">Fondos Apple predefinidos</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            ${presetsHtml}
+                        </div>
+                    </div>
+
+                    <div class="pt-1 border-t border-black/10 dark:border-white/10">
+                        <label class="block text-xs text-slate-400 mb-1">O pegá el link de una imagen (URL)</label>
+                        <input id="modal-wp-url" type="url" value="${currentWp.type === 'image' && !WALLPAPER_PRESETS.some(p => p.value === currentWp.value) ? currentWp.value : ''}" placeholder="https://ejemplo.com/mi-fondo.jpg" class="w-full bg-black/[0.05] dark:bg-white/[0.08] border border-slate-300 dark:border-white/15 rounded-xl px-3 py-2 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-[#007AFF]">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">O elegí una foto de tu galería / dispositivo</label>
+                        <input id="modal-wp-file" type="file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3.5 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#007AFF]/15 file:text-[#007AFF] dark:file:text-[#0A84FF] cursor-pointer">
+                    </div>
+
+                    <div class="flex items-center justify-between gap-3 pt-1">
+                        <div class="flex-1">
+                            <label class="block text-xs text-slate-400 mb-1">Oscurecer fondo (<span id="wp-dim-label">${currentWp.dim ?? 50}%</span>)</label>
+                            <input id="modal-wp-dim" type="range" min="10" max="85" value="${currentWp.dim ?? 50}" class="w-full accent-[#007AFF] cursor-pointer">
+                        </div>
+                        <label class="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300 cursor-pointer mt-4">
+                            <input id="modal-wp-blur" type="checkbox" ${currentWp.blur !== false ? 'checked' : ''} class="rounded text-[#007AFF]">
+                            Suavizar
+                        </label>
+                    </div>
+                </div>
+                `,
+                () => {
+                    const urlInput = document.getElementById('modal-wp-url').value.trim();
+                    const dimVal = parseInt(document.getElementById('modal-wp-dim').value, 10);
+                    const blurVal = document.getElementById('modal-wp-blur').checked;
+
+                    if (urlInput) {
+                        saveState('wallpaper', { type: 'image', value: urlInput, dim: dimVal, blur: blurVal });
+                    } else {
+                        saveState('wallpaper', { ...state.wallpaper, dim: dimVal, blur: blurVal });
+                    }
+                    applyWallpaper();
+                }
+            );
+
+            const dimSlider = document.getElementById('modal-wp-dim');
+            const dimLabel = document.getElementById('wp-dim-label');
+            const blurCheck = document.getElementById('modal-wp-blur');
+
+            dimSlider.addEventListener('input', () => {
+                dimLabel.textContent = `${dimSlider.value}%`;
+                state.wallpaper.dim = parseInt(dimSlider.value, 10);
+                applyWallpaper();
+            });
+
+            blurCheck.addEventListener('change', () => {
+                state.wallpaper.blur = blurCheck.checked;
+                applyWallpaper();
+            });
+
+            document.querySelectorAll('.wp-preset-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-wp-id');
+                    const preset = WALLPAPER_PRESETS.find(p => p.id === id);
+                    if (!preset) return;
+                    document.getElementById('modal-wp-url').value = '';
+                    const nextWp = {
+                        type: preset.type,
+                        value: preset.value || '',
+                        dim: parseInt(dimSlider.value, 10),
+                        blur: blurCheck.checked
+                    };
+                    saveState('wallpaper', nextWp);
+                    applyWallpaper();
                 });
-            }
-        };
-
-        window.returnToLobby = async function() {
-            if (!currentRoomId) return;
-            const roomRef = doc(db, 'rooms', currentRoomId);
-            const snap = await getDoc(roomRef);
-            if (!snap.exists()) return;
-            const room = snap.data();
-
-            const players = room.players || {};
-            Object.keys(players).forEach(uid => {
-                players[uid].answers = {};
-                players[uid].roundAnswers = {};
-                players[uid].submittedRound = 0;
             });
 
-            activePlayRound = 0;
-            localSubmittedRound = 0;
-            myDraftAnswers = {};
+            document.getElementById('modal-wp-file').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const maxW = 1280;
+                        const scale = Math.min(1, maxW / img.width);
+                        canvas.width = Math.round(img.width * scale);
+                        canvas.height = Math.round(img.height * scale);
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.72);
 
-            await updateDoc(roomRef, {
-                currentRound: 1,
-                status: 'lobby',
-                activeLetter: '',
-                roundLetters: {},
-                players: players
+                        document.getElementById('modal-wp-url').value = '';
+                        const nextWp = {
+                            type: 'image',
+                            value: compressedDataUrl,
+                            dim: parseInt(dimSlider.value, 10),
+                            blur: blurCheck.checked
+                        };
+                        saveState('wallpaper', nextWp);
+                        applyWallpaper();
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
             });
-        };
+        }
 
-        window.copyRoomCode = function() {
-            if (!currentRoomId) return;
-            navigator.clipboard.writeText(currentRoomId);
-            showModal("Copiado", "¡Código de sala copiado al portapapeles!");
-        };
+        document.getElementById('wallpaper-btn').addEventListener('click', openWallpaperModal);
+        document.getElementById('wallpaper-btn-mobile').addEventListener('click', openWallpaperModal);
 
-        window.leaveRoom = function() {
-            if (roomUnsubscribe) roomUnsubscribe();
-            if (timerInterval) clearInterval(timerInterval);
-            currentRoomId = null;
-            activePlayRound = 0;
-            localSubmittedRound = 0;
-            document.getElementById('roomBadge').classList.add('hidden');
-            switchView('menuView');
-        };
+        // 5. Exportar e Importar Backup (JSON)
+        document.getElementById('export-data-btn').addEventListener('click', () => {
+            const backup = {
+                syncKey: state.syncKey,
+                userName: state.userName,
+                accentColor: state.accentColor,
+                city: state.city,
+                wallpaper: state.wallpaper,
+                links: state.links,
+                todos: state.todos,
+                notes: state.notes
+            };
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'mi-inicio-backup.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('import-data-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    applyRemoteDataToUI(data);
+                    await pushStateToCloud(true);
+                } catch (err) {
+                    openModal('Error al importar', '<p class="text-xs text-[#FF453A]">El archivo seleccionado no es válido.</p>', () => {}, false);
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // 6. Restaurar valores de fábrica
+        document.getElementById('reset-defaults-btn').addEventListener('click', () => {
+            openModal(
+                '¿Restaurar datos de fábrica?',
+                '<p class="text-xs text-slate-500 dark:text-slate-400">Se restaurarán las notas, recordatorios, fondo y accesos a los valores originales tanto aquí como en la nube.</p>',
+                async () => {
+                    state.userName = 'Usuario';
+                    state.accentColor = '#007AFF';
+                    state.wallpaper = { type: 'default', value: '', dim: 50, blur: true };
+                    state.links = [...DEFAULT_LINKS];
+                    state.todos = [...DEFAULT_TODOS];
+                    state.notes = '';
+                    applyRemoteDataToUI(state);
+                    await pushStateToCloud(true);
+                }
+            );
+        });
+
+        // ==========================================
+        // INICIALIZACIÓN
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            applyTheme();
+            applyAccentColor();
+            applyWallpaper();
+            applyZenMode();
+            document.getElementById('user-name-display').textContent = state.userName;
+            updateClock();
+            setInterval(updateClock, 1000);
+            renderLinks();
+            renderTodos();
+            fetchWeather(state.city);
+            fetchDolar();
+            lucide.createIcons();
+            initFirebaseCloud();
+        });
     </script>
 </body>
 </html>
