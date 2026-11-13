@@ -187,13 +187,22 @@
                 </div>
             </div>
 
-            <!-- Píldoras de Estado: Nube + Dólar + Clima + Ajustes -->
+            <!-- Píldoras de Estado: Nube + Puente Celu/PC + Dólar + Clima + Ajustes -->
             <div class="flex items-center gap-2.5 lg:gap-3 overflow-x-auto no-scrollbar py-0.5 sm:ml-auto">
                 <!-- Píldora de Estado de Sincronización en la Nube (Firestore) -->
                 <button id="cloud-sync-btn" class="glass-card bg-white/65 dark:bg-white/[0.08] border border-white/60 dark:border-white/[0.12] px-4 py-2.5 rounded-full flex items-center gap-2 text-xs sm:text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0" title="Configurar sincronización en la nube entre PC y Celular">
                     <span id="cloud-status-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                     <i id="cloud-status-icon" data-lucide="cloud" class="w-4 h-4 text-[#007AFF] dark:text-[#0A84FF]"></i>
                     <span id="cloud-status-text" class="font-medium text-slate-700 dark:text-white/85 text-xs sm:text-sm">Conectando...</span>
+                </button>
+
+                <!-- Botón Rápido: Puente Celu ↔ PC (AirDrop de PDFs, Fotos y Mensajes) -->
+                <button id="bridge-open-btn" class="glass-card bg-gradient-to-r from-[#007AFF]/15 to-[#5856D6]/15 dark:from-[#0A84FF]/20 dark:to-[#5E5CE6]/20 border border-[#007AFF]/35 dark:border-[#0A84FF]/35 px-4 py-2.5 rounded-full flex items-center gap-2 text-xs sm:text-sm hover:scale-[1.02] active:scale-95 transition-all shrink-0 shadow-sm" title="Pasar PDFs, fotos y mensajes entre el Celular y la PC (también podés arrastrar archivos a la pantalla)">
+                    <span class="w-5 h-5 rounded-full bg-[#007AFF] text-white flex items-center justify-center shadow-sm shrink-0">
+                        <i data-lucide="radio" class="w-3.5 h-3.5"></i>
+                    </span>
+                    <span class="font-semibold text-[#007AFF] dark:text-[#5AC8FA] text-xs sm:text-sm">Puente Celu ↔ PC</span>
+                    <span id="bridge-count-badge" class="hidden px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#007AFF] text-white tabular-nums">0</span>
                 </button>
 
                 <!-- Cotización Dólar en vivo (DolarApi) -->
@@ -527,10 +536,129 @@
         </div>
     </div>
 
+    <!-- OVERLAY GLOBAL DRAG & DROP (Se activa al arrastrar un PDF o foto a cualquier parte de la pantalla) -->
+    <div id="global-dropzone" class="fixed inset-0 z-[70] hidden items-center justify-center bg-[#007AFF]/25 dark:bg-[#0A84FF]/25 backdrop-blur-xl p-6 transition-all pointer-events-none">
+        <div class="glass-card bg-white/95 dark:bg-[#1C1C1E]/95 border-2 border-dashed border-[#007AFF] rounded-[36px] max-w-lg w-full p-10 text-center flex flex-col items-center gap-4 shadow-2xl">
+            <div class="w-20 h-20 rounded-full bg-[#007AFF]/15 text-[#007AFF] dark:text-[#5AC8FA] flex items-center justify-center animate-bounce">
+                <i data-lucide="upload-cloud" class="w-10 h-10"></i>
+            </div>
+            <h3 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Soltá tus archivos aquí</h3>
+            <p class="text-sm text-slate-500 dark:text-white/65">Los PDFs, fotos o documentos se enviarán al instante al <b>Puente Celu ↔ PC</b></p>
+        </div>
+    </div>
+
+    <!-- MODAL GRANDE: PUENTE CELU ↔ PC (AIRDROP DE PDFs, FOTOS Y MENSAJES) -->
+    <div id="bridge-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/60 backdrop-blur-md p-0 sm:p-4 lg:p-6">
+        <div class="glass-card bg-white/95 dark:bg-[#1C1C1E]/95 border-t sm:border border-white/60 dark:border-white/[0.15] rounded-t-[30px] sm:rounded-[32px] max-w-4xl w-full h-[92dvh] sm:h-[85dvh] max-h-[820px] flex flex-col shadow-2xl overflow-hidden">
+
+            <!-- Indicador superior móvil -->
+            <div class="w-10 h-1 rounded-full bg-black/15 dark:bg-white/20 mx-auto mt-2.5 mb-1 sm:hidden shrink-0"></div>
+
+            <!-- Cabecera del Puente -->
+            <div class="px-5 sm:px-7 py-4 border-b border-black/[0.06] dark:border-white/[0.08] flex flex-wrap items-center justify-between gap-3 shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#007AFF] to-[#5856D6] text-white flex items-center justify-center shadow-md shrink-0">
+                        <i data-lucide="radio" class="w-5 h-5"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h3 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">Puente Celu ↔ PC</h3>
+                            <span id="bridge-device-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#007AFF]/15 text-[#007AFF] dark:text-[#5AC8FA]">
+                                Conectado
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-white/55 truncate">
+                            Pasá PDFs de clientes, fotos de documentos y mensajes en vivo · Arrastrá archivos o pegá con Ctrl+V
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 ml-auto">
+                    <button id="bridge-clear-all-btn" type="button" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#FF453A]/12 text-[#FF453A] hover:bg-[#FF453A]/20 active:scale-95 transition flex items-center gap-1.5" title="Borrar todos los archivos y mensajes del puente">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        <span id="bridge-clear-all-label">Vaciar bandeja</span>
+                    </button>
+                    <button id="bridge-close-btn" type="button" class="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-white/70 hover:text-slate-900 dark:hover:text-white transition" title="Cerrar">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Barra de Filtros + Botones Rápidos de Carga -->
+            <div class="px-5 sm:px-7 py-3 bg-black/[0.02] dark:bg-white/[0.02] border-b border-black/[0.05] dark:border-white/[0.06] flex flex-wrap items-center justify-between gap-2.5 shrink-0">
+                <!-- Filtros por tipo -->
+                <div class="flex items-center gap-1 bg-black/[0.05] dark:bg-white/[0.08] p-1 rounded-full overflow-x-auto no-scrollbar">
+                    <button type="button" data-bridge-filter="all" class="bridge-filter-btn px-3.5 py-1 rounded-full text-xs font-semibold bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm transition shrink-0">Todo</button>
+                    <button type="button" data-bridge-filter="file" class="bridge-filter-btn px-3.5 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0">PDFs y Archivos</button>
+                    <button type="button" data-bridge-filter="photo" class="bridge-filter-btn px-3.5 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0">Fotos</button>
+                    <button type="button" data-bridge-filter="text" class="bridge-filter-btn px-3.5 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0">Mensajes</button>
+                </div>
+
+                <!-- Botones directos para subir PDF/Archivo o Foto/Cámara -->
+                <div class="flex items-center gap-2">
+                    <label class="cursor-pointer px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#007AFF] hover:bg-[#007AFF]/90 active:scale-95 text-white flex items-center gap-1.5 shadow-sm transition">
+                        <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
+                        <span>Subir PDF / Archivo</span>
+                        <input id="bridge-file-input" type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.webp,*/*" class="hidden">
+                    </label>
+                    <label class="cursor-pointer px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#30D158]/15 text-[#248A3D] dark:text-[#30D158] hover:bg-[#30D158]/25 active:scale-95 flex items-center gap-1.5 transition">
+                        <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                        <span>Foto / Cámara</span>
+                        <input id="bridge-camera-input" type="file" multiple accept="image/*" class="hidden">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Barra de Progreso de Subida / Descarga (Oculta cuando no hay transferencia activa) -->
+            <div id="bridge-progress-wrap" class="hidden px-5 sm:px-7 py-2.5 bg-[#007AFF]/10 border-b border-[#007AFF]/20 shrink-0">
+                <div class="flex items-center justify-between text-xs font-semibold text-[#007AFF] dark:text-[#5AC8FA] mb-1">
+                    <span id="bridge-progress-label">Subiendo archivo...</span>
+                    <span id="bridge-progress-pct" class="tabular-nums">0%</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full bg-[#007AFF]/20 overflow-hidden">
+                    <div id="bridge-progress-bar" class="h-full bg-[#007AFF] transition-all duration-200" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Lista en Tiempo Real de Archivos, PDFs, Fotos y Mensajes -->
+            <div id="bridge-feed" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3">
+                <!-- Se llena dinámicamente desde Firestore -->
+            </div>
+
+            <!-- Barra Inferior para Enviar Mensajes, CUIL, Patentes, Links o Pegar datos -->
+            <form id="bridge-msg-form" class="p-3.5 sm:p-5 border-t border-black/[0.06] dark:border-white/[0.08] bg-white/60 dark:bg-[#1C1C1E]/80 flex items-center gap-2.5 shrink-0">
+                <label class="cursor-pointer w-10 h-10 rounded-full bg-black/[0.06] dark:bg-white/[0.1] hover:bg-black/[0.1] dark:hover:bg-white/[0.15] active:scale-95 flex items-center justify-center text-slate-600 dark:text-white/80 shrink-0 transition" title="Adjuntar PDF, foto o documento">
+                    <i data-lucide="paperclip" class="w-4 h-4"></i>
+                    <input id="bridge-attach-bottom" type="file" multiple class="hidden">
+                </label>
+                <input
+                    id="bridge-msg-input"
+                    type="text"
+                    enterkeyhint="send"
+                    autocomplete="off"
+                    placeholder="Escribí un mensaje, DNI, CUIL, patente o link para mandar al otro dispositivo..."
+                    class="w-full bg-black/[0.05] dark:bg-white/[0.08] border border-transparent focus:border-[#007AFF] rounded-full px-4 py-2.5 text-base sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 focus:outline-none transition"
+                >
+                <button type="submit" class="px-5 py-2.5 rounded-full bg-[#007AFF] hover:bg-[#007AFF]/90 active:scale-95 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 shrink-0 shadow-sm transition">
+                    <span>Enviar</span>
+                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- VISOR DE FOTOS A PANTALLA COMPLETA (LIGHTBOX) -->
+    <div id="bridge-lightbox" class="fixed inset-0 z-[65] hidden items-center justify-center bg-black/90 backdrop-blur-lg p-4">
+        <button id="bridge-lightbox-close" type="button" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        <img id="bridge-lightbox-img" src="" alt="Vista previa" class="max-w-full max-h-[88dvh] object-contain rounded-2xl shadow-2xl">
+    </div>
+
     <!-- LÓGICA DE LA APLICACIÓN + FIREBASE FIRESTORE CLOUD SYNC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
         // MANIFEST PWA DINÁMICO (Para instalar en iOS y Android)
@@ -671,11 +799,19 @@
         let activeFirebaseConfig = { ...DEFAULT_FIREBASE_CONFIG };
         let lastCloudError = null;
         let unsubscribeWorkspace = null;
+        let unsubscribeBridge = null;
         let saveDebounceTimer = null;
         let isApplyingRemoteUpdate = false;
         const clientInstanceId = (typeof crypto !== 'undefined' && crypto.randomUUID)
             ? crypto.randomUUID()
             : 'client-' + Math.random().toString(36).substring(2, 11);
+
+        // Estado del Puente Celu ↔ PC (AirDrop)
+        const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+        const currentDeviceLabel = isMobileDevice ? 'Celular' : 'PC';
+        let bridgeItems = [];
+        let bridgeFilter = 'all';
+        let bridgeClearConfirmTimeout = null;
 
         function parseFirebaseConfigInput(rawInput) {
             if (!rawInput) return null;
@@ -863,7 +999,634 @@
                     updateCloudIndicator('error', 'Revisar Reglas');
                 }
             );
+
+            // Suscribirse también en vivo a la bandeja del Puente Celu ↔ PC
+            subscribeToBridgeItems(cleanKey);
         }
+
+        // ==========================================
+        // PUENTE CELU ↔ PC (AIRDROP EN TIEMPO REAL CON SOPORTE PDF MULTIPARTE)
+        // ==========================================
+        const BRIDGE_CHUNK_SIZE = 550 * 1024; // ~550 KB por parte para estar siempre debajo del límite de 1 MB de Firestore
+
+        function subscribeToBridgeItems(syncKey) {
+            if (!db) return;
+            if (unsubscribeBridge) {
+                unsubscribeBridge();
+                unsubscribeBridge = null;
+            }
+            const cleanKey = (syncKey || 'mi-inicio-apple').trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-') || 'mi-inicio-apple';
+            const colRef = collection(db, 'workspaces', cleanKey, 'bridge_items');
+
+            unsubscribeBridge = onSnapshot(
+                colRef,
+                (snapshot) => {
+                    const items = [];
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        if (data) {
+                            items.push({ id: docSnap.id, ...data });
+                        }
+                    });
+                    // Ordenar del más nuevo al más antiguo en memoria
+                    items.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                    bridgeItems = items;
+                    updateBridgeBadge();
+                    renderBridgeFeed();
+                },
+                (err) => {
+                    console.error('Error en suscripción del Puente:', err);
+                }
+            );
+        }
+
+        function updateBridgeBadge() {
+            const badge = document.getElementById('bridge-count-badge');
+            if (!badge) return;
+            const count = bridgeItems.length;
+            if (count > 0) {
+                badge.textContent = count > 99 ? '99+' : String(count);
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function setBridgeProgress(visible, labelText = 'Subiendo...', percent = 0) {
+            const wrap = document.getElementById('bridge-progress-wrap');
+            const label = document.getElementById('bridge-progress-label');
+            const pct = document.getElementById('bridge-progress-pct');
+            const bar = document.getElementById('bridge-progress-bar');
+            if (!wrap) return;
+            if (!visible) {
+                wrap.classList.add('hidden');
+                return;
+            }
+            wrap.classList.remove('hidden');
+            label.textContent = labelText;
+            const clamped = Math.max(0, Math.min(100, Math.round(percent)));
+            pct.textContent = `${clamped}%`;
+            bar.style.width = `${clamped}%`;
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes || bytes <= 0) return '0 KB';
+            const kb = bytes / 1024;
+            if (kb < 1024) return `${kb.toFixed(kb < 10 ? 1 : 0)} KB`;
+            const mb = kb / 1024;
+            return `${mb.toFixed(2)} MB`;
+        }
+
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Generar miniatura rápida para fotos
+        function createPhotoThumbnail(dataUrl) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const maxDim = 420;
+                        const scale = Math.min(1, maxDim / img.width, maxDim / img.height);
+                        canvas.width = Math.max(1, Math.round(img.width * scale));
+                        canvas.height = Math.max(1, Math.round(img.height * scale));
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.68));
+                    } catch (e) {
+                        resolve('');
+                    }
+                };
+                img.onerror = () => resolve('');
+                img.src = dataUrl;
+            });
+        }
+
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = (err) => reject(err);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Subir uno o varios archivos (PDFs, Fotos, Word, Excel, etc.) con particionado automático
+        async function uploadFilesToBridge(fileList) {
+            if (!db || !fileList || fileList.length === 0) return;
+            const files = Array.from(fileList);
+
+            for (let fIdx = 0; fIdx < files.length; fIdx++) {
+                const file = files[fIdx];
+                // Límite de seguridad razonable: 15 MB por archivo
+                if (file.size > 15 * 1024 * 1024) {
+                    setBridgeProgress(true, `El archivo "${file.name}" supera los 15 MB.`, 100);
+                    setTimeout(() => setBridgeProgress(false), 3000);
+                    continue;
+                }
+
+                try {
+                    setBridgeProgress(true, `Preparando ${file.name}...`, 5);
+                    const dataUrl = await readFileAsDataURL(file);
+                    const isImage = file.type.startsWith('image/');
+                    const category = isImage ? 'photo' : 'file';
+                    const itemId = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+
+                    let thumbData = '';
+                    if (isImage) {
+                        thumbData = await createPhotoThumbnail(dataUrl);
+                    }
+
+                    const totalLength = dataUrl.length;
+                    let totalChunks = 0;
+                    let inlineData = '';
+
+                    if (totalLength <= BRIDGE_CHUNK_SIZE) {
+                        inlineData = dataUrl;
+                        setBridgeProgress(true, `Subiendo ${file.name}...`, 65);
+                    } else {
+                        totalChunks = Math.ceil(totalLength / BRIDGE_CHUNK_SIZE);
+                        for (let c = 0; c < totalChunks; c++) {
+                            const slice = dataUrl.slice(c * BRIDGE_CHUNK_SIZE, (c + 1) * BRIDGE_CHUNK_SIZE);
+                            const chunkDocRef = doc(db, 'workspaces', state.syncKey, 'bridge_chunks', `chunk_${itemId}_${c}`);
+                            await setDoc(chunkDocRef, {
+                                itemId,
+                                index: c,
+                                data: slice,
+                                createdAt: Date.now()
+                            });
+                            const pct = Math.round(((c + 1) / totalChunks) * 90);
+                            setBridgeProgress(true, `Subiendo ${file.name} (parte ${c + 1}/${totalChunks})...`, pct);
+                        }
+                    }
+
+                    const itemDocRef = doc(db, 'workspaces', state.syncKey, 'bridge_items', itemId);
+                    await setDoc(itemDocRef, {
+                        type: category,
+                        fileName: file.name || (isImage ? 'foto.jpg' : 'documento.pdf'),
+                        mimeType: file.type || 'application/octet-stream',
+                        fileSize: file.size || 0,
+                        totalChunks,
+                        inlineData,
+                        thumbData,
+                        device: currentDeviceLabel,
+                        createdAt: Date.now()
+                    });
+
+                    setBridgeProgress(true, `¡${file.name} enviado!`, 100);
+                } catch (err) {
+                    console.error('Error subiendo archivo al puente:', err);
+                    setBridgeProgress(true, `Error al subir ${file.name}`, 100);
+                }
+            }
+
+            setTimeout(() => setBridgeProgress(false), 1200);
+        }
+
+        // Enviar un mensaje de texto / CUIL / link al Puente
+        async function sendTextToBridge(text) {
+            if (!db || !text.trim()) return;
+            const itemId = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+            const itemDocRef = doc(db, 'workspaces', state.syncKey, 'bridge_items', itemId);
+            await setDoc(itemDocRef, {
+                type: 'text',
+                text: text.trim(),
+                device: currentDeviceLabel,
+                createdAt: Date.now()
+            });
+        }
+
+        // Reconstruir el DataURL completo (uniendo partes si es un PDF o foto grande)
+        async function reconstructBridgeItemDataUrl(item) {
+            if (item.inlineData) {
+                return item.inlineData;
+            }
+            if (!item.totalChunks || item.totalChunks <= 0) {
+                return null;
+            }
+            const parts = [];
+            for (let c = 0; c < item.totalChunks; c++) {
+                const pct = Math.round(((c + 1) / item.totalChunks) * 95);
+                setBridgeProgress(true, `Descargando ${item.fileName} (parte ${c + 1}/${item.totalChunks})...`, pct);
+                const chunkRef = doc(db, 'workspaces', state.syncKey, 'bridge_chunks', `chunk_${item.id}_${c}`);
+                const snap = await getDoc(chunkRef);
+                if (!snap.exists()) {
+                    throw new Error(`Falta la parte ${c + 1} del archivo`);
+                }
+                parts.push(snap.data().data || '');
+            }
+            setBridgeProgress(false);
+            return parts.join('');
+        }
+
+        function dataURLToBlob(dataUrl) {
+            const arr = dataUrl.split(',');
+            const mimeMatch = arr[0].match(/:(.*?);/);
+            const mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], { type: mime });
+        }
+
+        // Descargar o abrir archivo del Puente
+        async function handleBridgeFileAction(itemId, mode = 'download') {
+            const item = bridgeItems.find(x => x.id === itemId);
+            if (!item) return;
+            try {
+                const dataUrl = await reconstructBridgeItemDataUrl(item);
+                if (!dataUrl) return;
+
+                if (mode === 'lightbox') {
+                    const lb = document.getElementById('bridge-lightbox');
+                    const lbImg = document.getElementById('bridge-lightbox-img');
+                    lbImg.src = dataUrl;
+                    lb.classList.remove('hidden');
+                    lb.classList.add('flex');
+                    return;
+                }
+
+                const blob = dataURLToBlob(dataUrl);
+                const blobUrl = URL.createObjectURL(blob);
+
+                if (mode === 'open') {
+                    window.open(blobUrl, '_blank', 'noopener');
+                } else {
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = item.fileName || 'archivo';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+                }
+            } catch (err) {
+                console.error('Error al reconstruir archivo:', err);
+                setBridgeProgress(true, 'Error al reconstruir el archivo.', 100);
+                setTimeout(() => setBridgeProgress(false), 2500);
+            }
+        }
+
+        // Eliminar un elemento y sus partes asociadas en Firestore
+        async function deleteBridgeItem(itemId) {
+            if (!db) return;
+            const item = bridgeItems.find(x => x.id === itemId);
+            try {
+                if (item && item.totalChunks > 0) {
+                    for (let c = 0; c < item.totalChunks; c++) {
+                        const chunkRef = doc(db, 'workspaces', state.syncKey, 'bridge_chunks', `chunk_${itemId}_${c}`);
+                        await deleteDoc(chunkRef);
+                    }
+                }
+                await deleteDoc(doc(db, 'workspaces', state.syncKey, 'bridge_items', itemId));
+            } catch (err) {
+                console.error('Error eliminando item del puente:', err);
+            }
+        }
+
+        // Vaciar toda la bandeja del Puente
+        async function clearAllBridgeItems() {
+            if (!db || bridgeItems.length === 0) return;
+            setBridgeProgress(true, 'Vaciando bandeja...', 30);
+            const snapshotItems = [...bridgeItems];
+            for (let i = 0; i < snapshotItems.length; i++) {
+                await deleteBridgeItem(snapshotItems[i].id);
+                setBridgeProgress(true, 'Vaciando bandeja...', Math.round(((i + 1) / snapshotItems.length) * 100));
+            }
+            setBridgeProgress(false);
+        }
+
+        // Renderizar la lista de archivos, PDFs, fotos y mensajes
+        function renderBridgeFeed() {
+            const feed = document.getElementById('bridge-feed');
+            if (!feed) return;
+
+            const filtered = bridgeFilter === 'all'
+                ? bridgeItems
+                : bridgeItems.filter(item => item.type === bridgeFilter);
+
+            if (filtered.length === 0) {
+                feed.innerHTML = `
+                    <div class="h-full min-h-[240px] flex flex-col items-center justify-center text-center p-6 border-2 border-dashed border-black/10 dark:border-white/10 rounded-3xl">
+                        <div class="w-14 h-14 rounded-2xl bg-[#007AFF]/10 text-[#007AFF] dark:text-[#5AC8FA] flex items-center justify-center mb-3">
+                            <i data-lucide="inbox" class="w-7 h-7"></i>
+                        </div>
+                        <p class="text-sm font-semibold text-slate-800 dark:text-white mb-1">La bandeja está vacía</p>
+                        <p class="text-xs text-slate-500 dark:text-white/55 max-w-md">
+                            Subí un PDF de un cliente, sacá una foto desde el celular, arrastrá un archivo a la pantalla o escribí un mensaje abajo para verlo al instante en el otro dispositivo.
+                        </p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            feed.innerHTML = filtered.map(item => {
+                const dateObj = item.createdAt ? new Date(item.createdAt) : new Date();
+                const timeStr = dateObj.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+                const isFromPhone = item.device === 'Celular';
+                const deviceBadge = isFromPhone
+                    ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#30D158]/15 text-[#248A3D] dark:text-[#30D158]">📱 Celu</span>`
+                    : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#007AFF]/15 text-[#007AFF] dark:text-[#5AC8FA]">💻 PC</span>`;
+
+                if (item.type === 'text') {
+                    const safeText = escapeHtml(item.text);
+                    return `
+                        <div class="glass-card bg-white/80 dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/[0.1] rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="space-y-1.5 min-w-0 flex-1">
+                                <div class="flex items-center gap-2">
+                                    ${deviceBadge}
+                                    <span class="text-[11px] text-slate-400 dark:text-white/45 tabular-nums">${timeStr}</span>
+                                    <span class="text-[11px] font-medium text-slate-400 dark:text-white/40">Mensaje / Dato</span>
+                                </div>
+                                <p class="text-sm sm:text-base font-medium text-slate-900 dark:text-white break-words whitespace-pre-wrap select-all">${safeText}</p>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                                <button type="button" data-bridge-copy="${item.id}" class="px-3.5 py-2 rounded-full text-xs font-semibold bg-[#007AFF] text-white hover:opacity-90 active:scale-95 transition flex items-center gap-1.5 shadow-sm">
+                                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                    <span>Copiar</span>
+                                </button>
+                                <button type="button" data-bridge-del="${item.id}" class="p-2 rounded-full bg-black/5 dark:bg-white/10 text-slate-500 hover:text-[#FF453A] active:scale-95 transition" title="Eliminar">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                if (item.type === 'photo') {
+                    const previewSrc = item.thumbData || item.inlineData || '';
+                    const safeName = escapeHtml(item.fileName || 'Foto');
+                    return `
+                        <div class="glass-card bg-white/80 dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/[0.1] rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+                            <div class="flex items-center gap-3.5 min-w-0">
+                                <button type="button" data-bridge-lightbox="${item.id}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-black/10 dark:bg-white/10 shrink-0 border border-black/10 dark:border-white/10 group relative">
+                                    ${previewSrc ? `<img src="${previewSrc}" alt="${safeName}" class="w-full h-full object-cover group-hover:scale-105 transition">` : `<i data-lucide="image" class="w-6 h-6 m-auto text-slate-400"></i>`}
+                                </button>
+                                <div class="min-w-0 space-y-1">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        ${deviceBadge}
+                                        <span class="text-[11px] text-slate-400 dark:text-white/45 tabular-nums">${timeStr}</span>
+                                        <span class="text-[11px] text-slate-400 dark:text-white/45">${formatBytes(item.fileSize)}</span>
+                                    </div>
+                                    <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">${safeName}</p>
+                                    <button type="button" data-bridge-lightbox="${item.id}" class="text-xs font-medium text-[#007AFF] dark:text-[#5AC8FA] hover:underline">
+                                        Ver foto en pantalla completa
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                                <button type="button" data-bridge-download="${item.id}" class="px-4 py-2 rounded-full text-xs font-semibold bg-[#007AFF] text-white hover:opacity-90 active:scale-95 transition flex items-center gap-1.5 shadow-sm">
+                                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                    <span>Descargar</span>
+                                </button>
+                                <button type="button" data-bridge-del="${item.id}" class="p-2 rounded-full bg-black/5 dark:bg-white/10 text-slate-500 hover:text-[#FF453A] active:scale-95 transition" title="Eliminar">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Archivo PDF o documento general
+                const isPdf = (item.mimeType && item.mimeType.includes('pdf')) || (item.fileName && item.fileName.toLowerCase().endsWith('.pdf'));
+                const safeName = escapeHtml(item.fileName || 'Documento.pdf');
+                const badgeColor = isPdf ? 'bg-[#FF453A]/15 text-[#FF453A]' : 'bg-[#007AFF]/15 text-[#007AFF]';
+                const iconName = isPdf ? 'file-text' : 'file';
+
+                return `
+                    <div class="glass-card bg-white/80 dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/[0.1] rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl ${badgeColor} flex flex-col items-center justify-center shrink-0 font-bold text-[10px]">
+                                <i data-lucide="${iconName}" class="w-5 h-5 mb-0.5"></i>
+                                <span>${isPdf ? 'PDF' : 'DOC'}</span>
+                            </div>
+                            <div class="min-w-0 space-y-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    ${deviceBadge}
+                                    <span class="text-[11px] text-slate-400 dark:text-white/45 tabular-nums">${timeStr}</span>
+                                    <span class="text-[11px] font-medium text-slate-500 dark:text-white/55">${formatBytes(item.fileSize)}</span>
+                                </div>
+                                <p class="text-sm sm:text-base font-semibold text-slate-900 dark:text-white truncate" title="${safeName}">${safeName}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                            <button type="button" data-bridge-open="${item.id}" class="px-3.5 py-2 rounded-full text-xs font-semibold bg-black/[0.06] dark:bg-white/[0.12] text-slate-800 dark:text-white hover:bg-black/[0.1] dark:hover:bg-white/[0.18] active:scale-95 transition flex items-center gap-1.5">
+                                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                                <span>Abrir</span>
+                            </button>
+                            <button type="button" data-bridge-download="${item.id}" class="px-4 py-2 rounded-full text-xs font-semibold bg-[#007AFF] text-white hover:opacity-90 active:scale-95 transition flex items-center gap-1.5 shadow-sm">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                <span>Descargar</span>
+                            </button>
+                            <button type="button" data-bridge-del="${item.id}" class="p-2 rounded-full bg-black/5 dark:bg-white/10 text-slate-500 hover:text-[#FF453A] active:scale-95 transition" title="Eliminar">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+
+            // Eventos de copiar texto
+            feed.querySelectorAll('[data-bridge-copy]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-bridge-copy');
+                    const item = bridgeItems.find(x => x.id === id);
+                    if (!item || !item.text) return;
+                    const temp = document.createElement('textarea');
+                    temp.value = item.text;
+                    document.body.appendChild(temp);
+                    temp.select();
+                    document.execCommand('copy');
+                    temp.remove();
+                    const span = btn.querySelector('span');
+                    if (span) span.textContent = '¡Copiado!';
+                    setTimeout(() => {
+                        if (span) span.textContent = 'Copiar';
+                    }, 1500);
+                });
+            });
+
+            // Eventos de abrir PDF/archivo en pestaña nueva
+            feed.querySelectorAll('[data-bridge-open]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    handleBridgeFileAction(btn.getAttribute('data-bridge-open'), 'open');
+                });
+            });
+
+            // Eventos de descargar PDF/archivo/foto
+            feed.querySelectorAll('[data-bridge-download]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    handleBridgeFileAction(btn.getAttribute('data-bridge-download'), 'download');
+                });
+            });
+
+            // Eventos de ver foto en pantalla completa
+            feed.querySelectorAll('[data-bridge-lightbox]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    handleBridgeFileAction(btn.getAttribute('data-bridge-lightbox'), 'lightbox');
+                });
+            });
+
+            // Eventos de borrar item individual
+            feed.querySelectorAll('[data-bridge-del]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    deleteBridgeItem(btn.getAttribute('data-bridge-del'));
+                });
+            });
+        }
+
+        // Control de apertura y cierre del Modal del Puente Celu ↔ PC
+        const bridgeModal = document.getElementById('bridge-modal');
+        function openBridgeModal() {
+            const devBadge = document.getElementById('bridge-device-badge');
+            if (devBadge) {
+                devBadge.textContent = `${isMobileDevice ? '📱 En Celular' : '💻 En PC'} · ${state.syncKey}`;
+            }
+            bridgeModal.classList.remove('hidden');
+            bridgeModal.classList.add('flex');
+            renderBridgeFeed();
+            lucide.createIcons();
+        }
+
+        function closeBridgeModal() {
+            bridgeModal.classList.add('hidden');
+            bridgeModal.classList.remove('flex');
+        }
+
+        document.getElementById('bridge-open-btn').addEventListener('click', openBridgeModal);
+        document.getElementById('bridge-close-btn').addEventListener('click', closeBridgeModal);
+        bridgeModal.addEventListener('click', (e) => {
+            if (e.target === bridgeModal) closeBridgeModal();
+        });
+
+        // Lightbox de fotos
+        const bridgeLightbox = document.getElementById('bridge-lightbox');
+        document.getElementById('bridge-lightbox-close').addEventListener('click', () => {
+            bridgeLightbox.classList.add('hidden');
+            bridgeLightbox.classList.remove('flex');
+        });
+        bridgeLightbox.addEventListener('click', (e) => {
+            if (e.target === bridgeLightbox) {
+                bridgeLightbox.classList.add('hidden');
+                bridgeLightbox.classList.remove('flex');
+            }
+        });
+
+        // Filtros del Puente
+        document.querySelectorAll('.bridge-filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                bridgeFilter = btn.getAttribute('data-bridge-filter');
+                document.querySelectorAll('.bridge-filter-btn').forEach(b => {
+                    b.className = 'bridge-filter-btn px-3.5 py-1 rounded-full text-xs font-medium text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition shrink-0';
+                });
+                btn.className = 'bridge-filter-btn px-3.5 py-1 rounded-full text-xs font-semibold bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm transition shrink-0';
+                renderBridgeFeed();
+            });
+        });
+
+        // Inputs de subida de archivos y fotos en el Puente
+        ['bridge-file-input', 'bridge-camera-input', 'bridge-attach-bottom'].forEach(inputId => {
+            const el = document.getElementById(inputId);
+            if (el) {
+                el.addEventListener('change', async (e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                        await uploadFilesToBridge(e.target.files);
+                        e.target.value = '';
+                    }
+                });
+            }
+        });
+
+        // Enviar mensaje de texto en el Puente
+        document.getElementById('bridge-msg-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('bridge-msg-input');
+            const val = input.value.trim();
+            if (!val) return;
+            input.value = '';
+            await sendTextToBridge(val);
+        });
+
+        // Botón Vaciar Bandeja con confirmación en 2 toques (sin usar confirm() nativo)
+        document.getElementById('bridge-clear-all-btn').addEventListener('click', async () => {
+            const label = document.getElementById('bridge-clear-all-label');
+            if (!label) return;
+            if (bridgeItems.length === 0) return;
+
+            if (label.getAttribute('data-confirming') === 'true') {
+                clearTimeout(bridgeClearConfirmTimeout);
+                label.removeAttribute('data-confirming');
+                label.textContent = 'Vaciar bandeja';
+                await clearAllBridgeItems();
+            } else {
+                label.setAttribute('data-confirming', 'true');
+                label.textContent = '¿Seguro? Tocá de nuevo';
+                bridgeClearConfirmTimeout = setTimeout(() => {
+                    label.removeAttribute('data-confirming');
+                    label.textContent = 'Vaciar bandeja';
+                }, 3500);
+            }
+        });
+
+        // Drag & Drop Global en cualquier parte de la ventana para subir PDFs o fotos directo
+        const globalDropzone = document.getElementById('global-dropzone');
+        let dragDepth = 0;
+
+        window.addEventListener('dragenter', (e) => {
+            if (e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files')) {
+                e.preventDefault();
+                dragDepth++;
+                globalDropzone.classList.remove('hidden');
+                globalDropzone.classList.add('flex');
+            }
+        });
+
+        window.addEventListener('dragover', (e) => {
+            if (e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files')) {
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('dragleave', (e) => {
+            if (e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files')) {
+                dragDepth = Math.max(0, dragDepth - 1);
+                if (dragDepth === 0) {
+                    globalDropzone.classList.add('hidden');
+                    globalDropzone.classList.remove('flex');
+                }
+            }
+        });
+
+        window.addEventListener('drop', async (e) => {
+            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                e.preventDefault();
+                dragDepth = 0;
+                globalDropzone.classList.add('hidden');
+                globalDropzone.classList.remove('flex');
+                openBridgeModal();
+                await uploadFilesToBridge(e.dataTransfer.files);
+            }
+        });
+
+        // Pegar capturas de pantalla o archivos con Ctrl + V directo al Puente
+        window.addEventListener('paste', async (e) => {
+            if (!e.clipboardData || !e.clipboardData.files || e.clipboardData.files.length === 0) return;
+            openBridgeModal();
+            await uploadFilesToBridge(e.clipboardData.files);
+        });
 
         // Conectar directo a DEFAULT_FIREBASE_CONFIG sin usar Firebase Auth ni __firebase_config
         async function initFirebaseCloud(overrideConfig = null) {
