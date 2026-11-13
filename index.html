@@ -530,7 +530,6 @@
     <!-- LÓGICA DE LA APLICACIÓN + FIREBASE FIRESTORE CLOUD SYNC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
@@ -560,6 +559,18 @@
         })();
 
         // ==========================================
+        // CONFIGURACIÓN DE TU PROYECTO FIREBASE FIRESTORE
+        // ==========================================
+        const DEFAULT_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDbI9od6ftD91nuKER9IB3p7Z4lF27K77U",
+            authDomain: "mi-inicio-8b90f.firebaseapp.com",
+            projectId: "mi-inicio-8b90f",
+            storageBucket: "mi-inicio-8b90f.firebasestorage.app",
+            messagingSenderId: "427031686962",
+            appId: "1:427031686962:web:3ad65728b9b2b73316b12b"
+        };
+
+        // ==========================================
         // ESTADO PREDETERMINADO Y PRESETS APPLE
         // ==========================================
         const DEFAULT_LINKS = [
@@ -575,7 +586,7 @@
 
         const DEFAULT_TODOS = [
             { id: 't1', text: 'Probar cálculo con % en Calculadora o Spotlight (ej: 1000+21%)', done: false },
-            { id: 't2', text: 'Abrir "Nube activa" arriba para vincular PC y celular', done: false }
+            { id: 't2', text: 'Tus cambios ya se guardan en vivo en mi-inicio-8b90f', done: false }
         ];
 
         const ACCENT_COLORS = [
@@ -598,43 +609,104 @@
             { id: 'minimaldark', name: 'Minimal Dark', type: 'gradient', value: 'linear-gradient(145deg, #090A0F 0%, #161824 50%, #090A0F 100%)', preview: 'linear-gradient(135deg, #161824 0%, #090A0F 100%)' }
         ];
 
-        // Leer código de sincronización desde URL (?sync=...) o usar el código compartido por defecto
+        const LOCAL_STORAGE_KEY = 'mi_inicio_apple_cache_v1';
         const urlParams = new URLSearchParams(window.location.search);
-        const initialSyncKey = (urlParams.get('sync') || 'mi-inicio-apple').trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-');
+        const savedLocalCache = (() => {
+            try {
+                return JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || 'null');
+            } catch (e) {
+                return null;
+            }
+        })();
+
+        const initialSyncKey = (
+            urlParams.get('sync') ||
+            (savedLocalCache && savedLocalCache.syncKey) ||
+            'mi-inicio-apple'
+        ).trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-');
 
         const state = {
             syncKey: initialSyncKey || 'mi-inicio-apple',
-            userName: 'Usuario',
-            theme: 'dark',
-            accentColor: '#007AFF',
-            city: 'Buenos Aires',
-            use24h: true,
-            zenMode: false,
+            userName: (savedLocalCache && savedLocalCache.userName) || 'Usuario',
+            theme: (savedLocalCache && savedLocalCache.theme) || 'dark',
+            accentColor: (savedLocalCache && savedLocalCache.accentColor) || '#007AFF',
+            city: (savedLocalCache && savedLocalCache.city) || 'Buenos Aires',
+            use24h: savedLocalCache && typeof savedLocalCache.use24h === 'boolean' ? savedLocalCache.use24h : true,
+            zenMode: savedLocalCache && typeof savedLocalCache.zenMode === 'boolean' ? savedLocalCache.zenMode : false,
             editLinksMode: false,
-            wallpaper: { type: 'default', value: '', dim: 50, blur: true },
+            wallpaper: (savedLocalCache && savedLocalCache.wallpaper) || { type: 'default', value: '', dim: 50, blur: true },
             activeCategory: 'todos',
             todoFilter: 'all', // 'all' | 'pending'
-            links: [...DEFAULT_LINKS],
-            todos: [...DEFAULT_TODOS],
-            notes: '',
+            links: (savedLocalCache && Array.isArray(savedLocalCache.links)) ? savedLocalCache.links : [...DEFAULT_LINKS],
+            todos: (savedLocalCache && Array.isArray(savedLocalCache.todos)) ? savedLocalCache.todos : [...DEFAULT_TODOS],
+            notes: (savedLocalCache && typeof savedLocalCache.notes === 'string') ? savedLocalCache.notes : '',
             dolarData: [],
             lastSyncedAt: null
         };
 
-        // ==========================================
-        // CONFIGURACIÓN DE FIREBASE FIRESTORE (REGLAS 1, 2 y 3)
-        // ==========================================
-        // Si alojás este archivo por tu cuenta fuera de este entorno, podés pegar tu firebaseConfig aquí:
-        const CUSTOM_FIREBASE_CONFIG = null;
+        function saveToLocalCache() {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({
+                    syncKey: state.syncKey,
+                    userName: state.userName,
+                    theme: state.theme,
+                    accentColor: state.accentColor,
+                    city: state.city,
+                    use24h: state.use24h,
+                    zenMode: state.zenMode,
+                    wallpaper: state.wallpaper,
+                    links: state.links,
+                    todos: state.todos,
+                    notes: state.notes
+                }));
+            } catch (e) {
+                // Ignorar si localStorage está lleno
+            }
+        }
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // ==========================================
+        // CONEXIÓN DIRECTA A FIRESTORE (COLECCIÓN 'workspaces')
+        // ==========================================
         let db = null;
-        let auth = null;
-        let currentUser = null;
+        let activeFirebaseConfig = { ...DEFAULT_FIREBASE_CONFIG };
+        let lastCloudError = null;
         let unsubscribeWorkspace = null;
         let saveDebounceTimer = null;
         let isApplyingRemoteUpdate = false;
-        const clientInstanceId = crypto.randomUUID();
+        const clientInstanceId = (typeof crypto !== 'undefined' && crypto.randomUUID)
+            ? crypto.randomUUID()
+            : 'client-' + Math.random().toString(36).substring(2, 11);
+
+        function parseFirebaseConfigInput(rawInput) {
+            if (!rawInput) return null;
+            if (typeof rawInput === 'object' && rawInput.apiKey && rawInput.projectId) {
+                return rawInput;
+            }
+            const text = String(rawInput).trim();
+            if (!text) return null;
+
+            try {
+                const parsed = JSON.parse(text);
+                if (parsed && parsed.apiKey && parsed.projectId) return parsed;
+            } catch (e) {
+                // Si no es JSON estricto, extraemos las propiedades con regex
+            }
+
+            const keys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+            const extracted = {};
+            keys.forEach(k => {
+                const regex = new RegExp(k + '\\s*:\\s*["\']([^"\']+)["\']');
+                const match = text.match(regex);
+                if (match && match[1]) {
+                    extracted[k] = match[1].trim();
+                }
+            });
+
+            if (extracted.apiKey && extracted.projectId) {
+                return extracted;
+            }
+            return null;
+        }
 
         function updateCloudIndicator(status, customLabel) {
             const dot = document.getElementById('cloud-status-dot');
@@ -647,26 +719,25 @@
             } else if (status === 'syncing') {
                 dot.className = 'w-2 h-2 rounded-full bg-[#007AFF] animate-ping';
                 text.textContent = customLabel || 'Sincronizando...';
-            } else if (status === 'error' || status === 'offline') {
+            } else if (status === 'error') {
+                dot.className = 'w-2 h-2 rounded-full bg-[#FF453A]';
+                text.textContent = customLabel || 'Revisar Reglas';
+            } else if (status === 'offline') {
                 dot.className = 'w-2 h-2 rounded-full bg-[#FF9F0A]';
                 text.textContent = customLabel || 'Modo Local';
             }
         }
 
-        // Referencia estricta (RULE 1): /artifacts/{appId}/public/data/startpage_workspaces/{syncKey}
+        // Referencia a la colección 'workspaces' y documento state.syncKey ('mi-inicio-apple' por defecto)
         function getWorkspaceDocRef(syncKey) {
             const cleanKey = (syncKey || 'mi-inicio-apple').trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-') || 'mi-inicio-apple';
-            return doc(db, 'artifacts', appId, 'public', 'data', 'startpage_workspaces', cleanKey);
-        }
-
-        // Referencia privada del usuario para recordar su syncKey elegido
-        function getUserPreferencesDocRef() {
-            return doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'preferences');
+            return doc(db, 'workspaces', cleanKey);
         }
 
         // Guardar estado completo en Firestore
         async function pushStateToCloud(immediate = false) {
-            if (!db || !currentUser) {
+            saveToLocalCache();
+            if (!db) {
                 updateCloudIndicator('offline', 'Modo Local');
                 return;
             }
@@ -674,7 +745,7 @@
             if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
 
             const performWrite = async () => {
-                if (!currentUser) return;
+                if (!db) return;
                 updateCloudIndicator('syncing', 'Sincronizando...');
                 try {
                     const docRef = getWorkspaceDocRef(state.syncKey);
@@ -690,28 +761,29 @@
                         todos: state.todos,
                         notes: state.notes,
                         updatedAt: Date.now(),
-                        updatedBy: currentUser.uid,
                         clientInstanceId
                     };
                     await setDoc(docRef, payload, { merge: true });
                     state.lastSyncedAt = new Date();
+                    lastCloudError = null;
                     updateCloudIndicator('synced', 'Nube activa');
                     const notesStatus = document.getElementById('notes-status');
                     if (notesStatus) notesStatus.textContent = 'Sincronizado';
                 } catch (err) {
                     console.error('Error guardando en Firestore:', err);
-                    updateCloudIndicator('error', 'Error nube');
+                    lastCloudError = err.code || err.message || 'Error al guardar';
+                    updateCloudIndicator('error', 'Revisar Reglas');
                 }
             };
 
             if (immediate) {
                 await performWrite();
             } else {
-                saveDebounceTimer = setTimeout(performWrite, 400);
+                saveDebounceTimer = setTimeout(performWrite, 350);
             }
         }
 
-        // Aplicar datos recibidos desde Firestore a la interfaz
+        // Aplicar datos recibidos en tiempo real desde Firestore a la interfaz
         function applyRemoteDataToUI(data) {
             if (!data) return;
             isApplyingRemoteUpdate = true;
@@ -736,6 +808,8 @@
                 }
             }
 
+            saveToLocalCache();
+
             document.getElementById('user-name-display').textContent = state.userName;
             applyTheme();
             applyAccentColor();
@@ -750,13 +824,16 @@
             }
 
             state.lastSyncedAt = data.updatedAt ? new Date(data.updatedAt) : new Date();
+            lastCloudError = null;
             updateCloudIndicator('synced', 'Nube activa');
+            const notesStatus = document.getElementById('notes-status');
+            if (notesStatus) notesStatus.textContent = 'Sincronizado';
             isApplyingRemoteUpdate = false;
         }
 
-        // Suscribirse en tiempo real al documento del Código de Sincronización activo
+        // Suscribirse en tiempo real al documento 'workspaces/{syncKey}'
         async function subscribeToWorkspace(syncKey) {
-            if (!db || !currentUser) return;
+            if (!db) return;
             if (unsubscribeWorkspace) {
                 unsubscribeWorkspace();
                 unsubscribeWorkspace = null;
@@ -764,19 +841,15 @@
 
             const cleanKey = (syncKey || 'mi-inicio-apple').trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-') || 'mi-inicio-apple';
             state.syncKey = cleanKey;
+            saveToLocalCache();
 
             updateCloudIndicator('syncing', 'Conectando...');
             const docRef = getWorkspaceDocRef(cleanKey);
 
-            try {
-                await setDoc(getUserPreferencesDocRef(), { activeSyncKey: cleanKey, updatedAt: Date.now() }, { merge: true });
-            } catch (e) {
-                // Continuar aunque falle el guardado de preferencia privada
-            }
-
             unsubscribeWorkspace = onSnapshot(
                 docRef,
                 async (snapshot) => {
+                    lastCloudError = null;
                     if (snapshot.exists()) {
                         const data = snapshot.data();
                         applyRemoteDataToUI(data);
@@ -786,59 +859,40 @@
                 },
                 (error) => {
                     console.error('Error en suscripción de Firestore:', error);
-                    updateCloudIndicator('error', 'Modo Local');
+                    lastCloudError = error.code || error.message || 'permission-denied';
+                    updateCloudIndicator('error', 'Revisar Reglas');
                 }
             );
         }
 
-        async function initFirebaseCloud() {
+        // Conectar directo a DEFAULT_FIREBASE_CONFIG sin usar Firebase Auth ni __firebase_config
+        async function initFirebaseCloud(overrideConfig = null) {
             try {
-                let firebaseConfig = CUSTOM_FIREBASE_CONFIG;
-                if (!firebaseConfig && typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    firebaseConfig = JSON.parse(__firebase_config);
+                if (unsubscribeWorkspace) {
+                    unsubscribeWorkspace();
+                    unsubscribeWorkspace = null;
                 }
 
-                if (!firebaseConfig) {
-                    updateCloudIndicator('offline', 'Modo Local');
-                    return;
-                }
+                const firebaseConfig = parseFirebaseConfigInput(overrideConfig) || DEFAULT_FIREBASE_CONFIG;
+                activeFirebaseConfig = firebaseConfig;
 
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
+                const appName = `mi-inicio-${firebaseConfig.projectId}-${Date.now()}`;
+                const app = initializeApp(firebaseConfig, appName);
                 db = getFirestore(app);
 
-                // RULE 3: Autenticar PRIMERO antes de realizar cualquier operación en Firestore
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                onAuthStateChanged(auth, async (user) => {
-                    currentUser = user;
-                    if (!currentUser) return;
-
-                    if (!urlParams.get('sync')) {
-                        try {
-                            const prefSnap = await getDoc(getUserPreferencesDocRef());
-                            if (prefSnap.exists() && prefSnap.data().activeSyncKey) {
-                                state.syncKey = prefSnap.data().activeSyncKey;
-                            }
-                        } catch (e) {
-                            // Usar state.syncKey por defecto
-                        }
-                    }
-
-                    await subscribeToWorkspace(state.syncKey);
-                });
+                await subscribeToWorkspace(state.syncKey);
+                return true;
             } catch (err) {
                 console.error('Error iniciando Firebase:', err);
-                updateCloudIndicator('offline', 'Modo Local');
+                lastCloudError = err.code || err.message;
+                updateCloudIndicator('error', 'Error conexión');
+                return false;
             }
         }
 
         function saveState(key, value, immediate = true) {
             state[key] = value;
+            saveToLocalCache();
             if (!isApplyingRemoteUpdate) {
                 pushStateToCloud(immediate);
             }
@@ -1392,20 +1446,27 @@
                 gain.connect(ctx.destination);
                 osc.start();
                 osc.stop(ctx.currentTime + 0.6);
-            } catch (err) {
-                // Audio bloqueado por el navegador
+            } catch (e) {
+                // Ignorar si el navegador bloquea el audio
             }
+        }
+
+        function setTimerStartBtnUI(running) {
+            if (running) {
+                timerStartBtn.innerHTML = '<i data-lucide="pause" class="w-3.5 h-3.5"></i><span>Pausar</span>';
+            } else {
+                timerStartBtn.innerHTML = '<i data-lucide="play" class="w-3.5 h-3.5"></i><span>Iniciar</span>';
+            }
+            lucide.createIcons();
         }
 
         timerStartBtn.addEventListener('click', () => {
             if (timerInterval) {
                 clearInterval(timerInterval);
                 timerInterval = null;
-                timerStartBtn.innerHTML = '<i data-lucide="play" class="w-3.5 h-3.5"></i><span>Continuar</span>';
-                lucide.createIcons();
+                setTimerStartBtnUI(false);
             } else {
-                timerStartBtn.innerHTML = '<i data-lucide="pause" class="w-3.5 h-3.5"></i><span>Pausar</span>';
-                lucide.createIcons();
+                setTimerStartBtnUI(true);
                 timerInterval = setInterval(() => {
                     if (timerSeconds > 0) {
                         timerSeconds--;
@@ -1413,36 +1474,41 @@
                     } else {
                         clearInterval(timerInterval);
                         timerInterval = null;
+                        setTimerStartBtnUI(false);
                         playTimerBeep();
-                        timerStartBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i><span>¡Tiempo cumplido!</span>';
-                        lucide.createIcons();
                     }
                 }, 1000);
             }
         });
 
         document.getElementById('timer-reset').addEventListener('click', () => {
-            clearInterval(timerInterval);
-            timerInterval = null;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
             timerSeconds = 1500;
             formatTimer(timerSeconds);
-            timerStartBtn.innerHTML = '<i data-lucide="play" class="w-3.5 h-3.5"></i><span>Iniciar</span>';
-            lucide.createIcons();
+            setTimerStartBtnUI(false);
         });
 
         document.querySelectorAll('.timer-preset').forEach(btn => {
             btn.addEventListener('click', () => {
-                clearInterval(timerInterval);
-                timerInterval = null;
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    setTimerStartBtnUI(false);
+                }
                 timerSeconds = parseInt(btn.getAttribute('data-time'), 10);
                 formatTimer(timerSeconds);
-                timerStartBtn.innerHTML = '<i data-lucide="play" class="w-3.5 h-3.5"></i><span>Iniciar</span>';
-                lucide.createIcons();
+                document.querySelectorAll('.timer-preset').forEach(b => {
+                    b.className = 'timer-preset px-3 py-1 rounded-full bg-black/[0.05] dark:bg-white/[0.08] text-slate-600 dark:text-white/70 active:scale-95 transition';
+                });
+                btn.className = 'timer-preset px-3 py-1 rounded-full bg-[#007AFF]/15 text-[#007AFF] dark:text-[#0A84FF] font-medium active:scale-95 transition';
             });
         });
 
         // ==========================================
-        // CLIMA EN VIVO (Open-Meteo API) Y DÓLAR (DolarApi)
+        // CLIMA EN VIVO (Open-Meteo) Y COTIZACIÓN DÓLAR (DolarApi)
         // ==========================================
         async function fetchWeather(cityName) {
             const tempEl = document.getElementById('weather-temp');
@@ -1488,19 +1554,19 @@
         }
 
         // ==========================================
-        // SISTEMA DE VENTANA MODAL PERSONALIZADA (MÓVIL + PC)
+        // SISTEMA DE VENTANAS MODALES (SIN USAR alert/confirm)
         // ==========================================
         const modal = document.getElementById('custom-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalBody = document.getElementById('modal-body');
         const modalForm = document.getElementById('modal-form');
         const modalSubmitBtn = document.getElementById('modal-submit-btn');
-        let currentModalSubmit = null;
+        let currentModalCallback = null;
 
-        function openModal(title, bodyHTML, onSubmit, showSubmit = true) {
+        function openModal(title, bodyHtml, onSubmit, showSubmit = true) {
             modalTitle.textContent = title;
-            modalBody.innerHTML = bodyHTML;
-            currentModalSubmit = onSubmit;
+            modalBody.innerHTML = bodyHtml;
+            currentModalCallback = onSubmit;
             if (showSubmit) {
                 modalSubmitBtn.classList.remove('hidden');
             } else {
@@ -1508,7 +1574,9 @@
             }
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            const firstInput = modalBody.querySelector('input[type="text"], input[type="url"]');
+            lucide.createIcons();
+
+            const firstInput = modalBody.querySelector('input:not([type="hidden"]):not(.sr-only), textarea');
             if (firstInput && window.innerWidth >= 640) {
                 setTimeout(() => firstInput.focus(), 50);
             }
@@ -1517,7 +1585,7 @@
         function closeModal() {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
-            currentModalSubmit = null;
+            currentModalCallback = null;
         }
 
         document.getElementById('modal-close').addEventListener('click', closeModal);
@@ -1526,29 +1594,33 @@
             if (e.target === modal) closeModal();
         });
 
-        modalForm.addEventListener('submit', (e) => {
+        modalForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (currentModalSubmit) currentModalSubmit();
+            if (currentModalCallback) {
+                await currentModalCallback();
+            }
             closeModal();
         });
 
-        // 0. GUÍA RÁPIDA PARA INSTALAR COMO APP EN CELULAR (iOS / ANDROID)
+        // 0. Guía para instalar en el celular
         const installGuideBtn = document.getElementById('install-guide-btn');
         if (installGuideBtn) {
             installGuideBtn.addEventListener('click', () => {
                 openModal(
                     'Usar en tu Celular (iPhone / Android)',
                     `
-                    <div class="space-y-3 text-xs text-slate-600 dark:text-white/75 leading-relaxed">
-                        <div class="p-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] space-y-1">
-                            <p class="font-semibold text-slate-900 dark:text-white">En iPhone (Safari):</p>
-                            <p>1. Tocá el botón <b>Compartir</b> (el cuadrado con la flecha hacia arriba) en la barra inferior.</p>
-                            <p>2. Elegí <b>"Agregar a Inicio"</b>. Se instalará como una app a pantalla completa.</p>
+                    <div class="space-y-3 text-xs text-slate-600 dark:text-white/80 leading-relaxed">
+                        <div class="p-3 rounded-2xl bg-[#007AFF]/10 border border-[#007AFF]/25">
+                            <p class="font-semibold text-[#007AFF] dark:text-[#0A84FF] mb-1">Sincronización Automática Activa</p>
+                            <p>Esta página ya tiene integrado tu proyecto <b>mi-inicio-8b90f</b>. Al abrirla en tu celular y en tu PC con el mismo código (<b>${state.syncKey}</b>), todo se actualiza en vivo.</p>
                         </div>
-                        <div class="p-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] space-y-1">
-                            <p class="font-semibold text-slate-900 dark:text-white">En Android (Chrome):</p>
-                            <p>1. Tocá los tres puntos <b>⋮</b> arriba a la derecha.</p>
-                            <p>2. Tocá <b>"Agregar a la pantalla principal"</b> o configurala como tu página principal en Ajustes de Chrome.</p>
+                        <div class="p-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06]">
+                            <p class="font-semibold text-slate-900 dark:text-white mb-1">En iPhone (Safari):</p>
+                            <p>Tocá el botón <b>Compartir</b> en la barra inferior y elegí <b>"Agregar a inicio"</b>.</p>
+                        </div>
+                        <div class="p-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06]">
+                            <p class="font-semibold text-slate-900 dark:text-white mb-1">En Android (Chrome):</p>
+                            <p>Tocá los <b>3 puntitos</b> arriba a la derecha y elegí <b>"Agregar a la pantalla principal"</b>.</p>
                         </div>
                     </div>
                     `,
@@ -1558,70 +1630,100 @@
             });
         }
 
-        // 1. MODAL DE SINCRONIZACIÓN EN LA NUBE (FIRESTORE PC ↔ CELULAR)
+        // 1. MODAL DE SINCRONIZACIÓN EN LA NUBE (CONECTADO A mi-inicio-8b90f)
         document.getElementById('cloud-sync-btn').addEventListener('click', () => {
             const lastSyncStr = state.lastSyncedAt
                 ? state.lastSyncedAt.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-                : 'Pendiente';
-            const fullUid = currentUser ? currentUser.uid : 'Sin sesión activa';
-            const shareableUrl = `${window.location.origin}${window.location.pathname}?sync=${encodeURIComponent(state.syncKey)}`;
+                : 'Sincronizando...';
+            const connectedProjectId = activeFirebaseConfig && activeFirebaseConfig.projectId
+                ? activeFirebaseConfig.projectId
+                : 'mi-inicio-8b90f';
+
+            const buildMagicUrl = (syncCodeValue) => {
+                const params = new URLSearchParams();
+                params.set('sync', syncCodeValue);
+                return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+            };
+
+            const shareableUrl = buildMagicUrl(state.syncKey);
+
+            const statusBadgeHtml = !lastCloudError
+                ? `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#30D158]/20 text-[#30D158]">CONECTADO</span>`
+                : `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#FF453A]/20 text-[#FF453A]">REVISAR REGLAS</span>`;
+
+            const errorHelpHtml = lastCloudError ? `
+                <div class="p-3 rounded-2xl bg-[#FF453A]/10 border border-[#FF453A]/30 text-[11px] text-slate-700 dark:text-white/85 space-y-1">
+                    <p class="font-semibold text-[#FF453A]">Firestore bloqueó el acceso (${lastCloudError})</p>
+                    <p>En tu consola de Firebase (<b>mi-inicio-8b90f</b>), entrá a <b>Firestore Database → Reglas (Rules)</b>, pegá esto y tocá <b>Publicar</b>:</p>
+                    <pre class="bg-black/80 text-emerald-400 p-2 rounded-lg text-[10px] overflow-x-auto font-mono select-all">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}</pre>
+                </div>
+            ` : '';
 
             openModal(
-                'iCloud Sync · Nube en Tiempo Real',
+                'Nube Activa (Firestore PC ↔ Celular)',
                 `
                 <div class="space-y-3.5">
-                    <div class="p-3 rounded-2xl bg-[#007AFF]/10 border border-[#007AFF]/25 flex items-center justify-between">
-                        <div class="flex items-center gap-2.5">
+                    <!-- Estado actual -->
+                    <div class="p-3 rounded-2xl bg-[#007AFF]/10 border border-[#007AFF]/25 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5 min-w-0">
                             <div class="w-8 h-8 rounded-full bg-[#007AFF] text-white flex items-center justify-center shrink-0">
                                 <i data-lucide="cloud-lightning" class="w-4 h-4"></i>
                             </div>
-                            <div>
-                                <p class="text-xs font-semibold text-slate-900 dark:text-white">Sincronización Firestore</p>
-                                <p class="text-[11px] text-slate-500 dark:text-white/60">Última actualización: <b>${lastSyncStr}</b></p>
+                            <div class="min-w-0">
+                                <p class="text-xs font-semibold text-slate-900 dark:text-white truncate">
+                                    Proyecto: ${connectedProjectId}
+                                </p>
+                                <p class="text-[11px] text-slate-500 dark:text-white/60">Colección: <b>workspaces/${state.syncKey}</b> · ${lastSyncStr}</p>
                             </div>
                         </div>
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#30D158]/20 text-[#30D158]">EN VIVO</span>
+                        ${statusBadgeHtml}
                     </div>
 
+                    ${errorHelpHtml}
+
+                    <!-- Código de Sincronización + Link Mágico -->
                     <div>
-                        <label class="block text-xs font-medium text-slate-600 dark:text-white/75 mb-1">
-                            Código de Sincronización (PC y Celular)
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-white/85 mb-1">
+                            Código de Sincronización (usá el mismo en PC y Celular)
                         </label>
-                        <p class="text-[11px] text-slate-500 dark:text-white/50 mb-2">
-                            Usá este mismo código en tu computadora y en tu celular para que compartan tus notas, recordatorios, accesos y fondo al instante.
-                        </p>
                         <div class="flex gap-2">
-                            <input id="modal-sync-key" type="text" value="${state.syncKey}" placeholder="Ej: angel-inicio" class="w-full bg-black/[0.05] dark:bg-white/[0.08] border border-slate-300 dark:border-white/15 rounded-xl px-3.5 py-2 text-base sm:text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#007AFF]">
-                            <button type="button" id="copy-sync-key-btn" class="px-3 py-2 rounded-xl bg-black/[0.06] dark:bg-white/[0.1] active:scale-95 text-xs font-semibold shrink-0">
-                                Copiar link
+                            <input id="modal-sync-key" type="text" value="${state.syncKey}" placeholder="Ej: mi-inicio-apple" class="w-full bg-black/[0.05] dark:bg-white/[0.08] border border-slate-300 dark:border-white/15 rounded-xl px-3.5 py-2 text-base sm:text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#007AFF]">
+                            <button type="button" id="copy-sync-key-btn" class="px-3 py-2 rounded-xl bg-[#007AFF] text-white active:scale-95 text-xs font-semibold shrink-0 shadow-sm">
+                                Copiar Link
                             </button>
                         </div>
                         <input id="modal-share-url" type="text" value="${shareableUrl}" readonly class="sr-only">
                     </div>
 
+                    <!-- Botones manuales Subir / Descargar / Descargar HTML -->
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <button type="button" id="force-cloud-push" class="py-2.5 px-3 rounded-xl bg-black/[0.05] dark:bg-white/[0.08] active:scale-95 text-xs font-medium flex items-center justify-center gap-1.5 transition">
                             <i data-lucide="upload-cloud" class="w-3.5 h-3.5 text-[#007AFF]"></i>
-                            Subir ahora
+                            Subir mis datos ahora
                         </button>
                         <button type="button" id="force-cloud-pull" class="py-2.5 px-3 rounded-xl bg-black/[0.05] dark:bg-white/[0.08] active:scale-95 text-xs font-medium flex items-center justify-center gap-1.5 transition">
                             <i data-lucide="download-cloud" class="w-3.5 h-3.5 text-[#30D158]"></i>
-                            Descargar de nube
+                            Traer datos de nube
                         </button>
                     </div>
 
-                    <div class="pt-2 border-t border-black/5 dark:border-white/10">
-                        <p class="text-[10px] text-slate-400 dark:text-white/40 font-mono break-all">
-                            ID de sesión dispositivo: ${fullUid}
-                        </p>
-                    </div>
+                    <button type="button" id="download-configured-html-btn" class="w-full py-2.5 px-3 rounded-xl bg-[#30D158]/15 text-[#30D158] hover:bg-[#30D158]/25 active:scale-95 text-xs font-semibold flex items-center justify-center gap-1.5 transition">
+                        <i data-lucide="file-code" class="w-3.5 h-3.5"></i>
+                        Descargar archivo index.html listo para usar
+                    </button>
+                    <p id="config-feedback-msg" class="text-[11px] hidden text-center"></p>
                 </div>
                 `,
                 async () => {
                     const inputVal = document.getElementById('modal-sync-key').value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-');
                     if (inputVal && inputVal !== state.syncKey) {
-                        const newUrl = `${window.location.pathname}?sync=${encodeURIComponent(inputVal)}`;
-                        window.history.replaceState(null, '', newUrl);
                         await subscribeToWorkspace(inputVal);
                     }
                 }
@@ -1629,9 +1731,26 @@
 
             lucide.createIcons();
 
+            document.getElementById('download-configured-html-btn').addEventListener('click', () => {
+                const feedback = document.getElementById('config-feedback-msg');
+                const fullHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'index.html';
+                a.click();
+                URL.revokeObjectURL(url);
+
+                feedback.classList.remove('hidden');
+                feedback.className = 'text-[11px] font-semibold text-[#30D158] text-center';
+                feedback.textContent = '¡Archivo index.html descargado con tu proyecto mi-inicio-8b90f integrado!';
+            });
+
             document.getElementById('copy-sync-key-btn').addEventListener('click', (e) => {
                 const keyVal = document.getElementById('modal-sync-key').value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-') || state.syncKey;
-                const fullLink = `${window.location.origin}${window.location.pathname}?sync=${encodeURIComponent(keyVal)}`;
+                const fullLink = buildMagicUrl(keyVal);
+
                 const hiddenUrl = document.getElementById('modal-share-url');
                 hiddenUrl.value = fullLink;
                 hiddenUrl.classList.remove('sr-only');
@@ -1647,7 +1766,7 @@
             });
 
             document.getElementById('force-cloud-pull').addEventListener('click', async () => {
-                if (!db || !currentUser) return;
+                if (!db) return;
                 const snap = await getDoc(getWorkspaceDocRef(state.syncKey));
                 if (snap.exists()) {
                     applyRemoteDataToUI(snap.data());
@@ -1774,7 +1893,7 @@
             );
         });
 
-        // 4.5. Selector de Fondo de Pantalla (PC y Móvil)
+        // 4.5. Selector de Fondo de Pantalla (PC y Móvil con Compresión Canvas para Firestore)
         function openWallpaperModal() {
             const currentWp = state.wallpaper || { type: 'default', value: '', dim: 50, blur: true };
 
@@ -1803,11 +1922,11 @@
 
                     <div class="pt-1 border-t border-black/10 dark:border-white/10">
                         <label class="block text-xs text-slate-400 mb-1">O pegá el link de una imagen (URL)</label>
-                        <input id="modal-wp-url" type="url" value="${currentWp.type === 'image' && !WALLPAPER_PRESETS.some(p => p.value === currentWp.value) ? currentWp.value : ''}" placeholder="https://ejemplo.com/mi-fondo.jpg" class="w-full bg-black/[0.05] dark:bg-white/[0.08] border border-slate-300 dark:border-white/15 rounded-xl px-3 py-2 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-[#007AFF]">
+                        <input id="modal-wp-url" type="url" value="${currentWp.type === 'image' && !WALLPAPER_PRESETS.some(p => p.value === currentWp.value) && !currentWp.value.startsWith('data:') ? currentWp.value : ''}" placeholder="https://ejemplo.com/mi-fondo.jpg" class="w-full bg-black/[0.05] dark:bg-white/[0.08] border border-slate-300 dark:border-white/15 rounded-xl px-3 py-2 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-[#007AFF]">
                     </div>
 
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">O elegí una foto de tu galería / dispositivo</label>
+                        <label class="block text-xs text-slate-400 mb-1">O elegí una foto de tu galería / dispositivo (se optimiza para la nube)</label>
                         <input id="modal-wp-file" type="file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3.5 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#007AFF]/15 file:text-[#007AFF] dark:file:text-[#0A84FF] cursor-pointer">
                     </div>
 
@@ -1878,12 +1997,13 @@
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         const maxW = 1280;
-                        const scale = Math.min(1, maxW / img.width);
+                        const maxH = 800;
+                        const scale = Math.min(1, maxW / img.width, maxH / img.height);
                         canvas.width = Math.round(img.width * scale);
                         canvas.height = Math.round(img.height * scale);
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.72);
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
 
                         document.getElementById('modal-wp-url').value = '';
                         const nextWp = {
